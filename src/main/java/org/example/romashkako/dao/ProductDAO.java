@@ -14,7 +14,7 @@ public interface ProductDAO {
 
     void updateProduct(Product product);
 
-    void deleteProduct(String name);
+    boolean deleteProduct(String name);
 
 
 

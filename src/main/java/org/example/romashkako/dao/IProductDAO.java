@@ -1,8 +1,5 @@
 package org.example.romashkako.dao;
 
-import org.example.romashkako.exception.ProductDTOAlreadyExistsException;
-import org.example.romashkako.exception.ProductDTODoesNotDeleted;
-import org.example.romashkako.exception.ProductDTONotFoundException;
 import org.example.romashkako.model.Product;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
@@ -16,9 +13,6 @@ public class IProductDAO implements ProductDAO {
 
     @Override
     public void createProduct(Product product) {
-        if (getProductByName(product.getName()).isPresent()) {
-            throw new ProductDTOAlreadyExistsException("Товар с данным названием уже существует");
-        }
         products.add(product);
     }
 
@@ -37,20 +31,13 @@ public class IProductDAO implements ProductDAO {
     @Override
     public void updateProduct(Product product) {
         int index = products.indexOf(product);
-        System.out.println(index);
         if (index >= 0) {
-            products.add(index, product);
-        } else {
-            throw new ProductDTONotFoundException("Товара с данным названием не существует");
+            products.set(index, product);
         }
     }
 
     @Override
-    public void deleteProduct(String name) {
-        boolean isDeleted = products.removeIf(product -> product.getName().equals(name));
-
-        if (!isDeleted) {
-            throw new ProductDTODoesNotDeleted("Не удалось удалить товар");
-        }
+    public boolean deleteProduct(String name) {
+        return products.removeIf(product -> product.getName().equals(name));
     }
 }

@@ -3,12 +3,14 @@ package org.example.romashkako.service;
 import jakarta.validation.Valid;
 import org.example.romashkako.dao.ProductDAO;
 import org.example.romashkako.dto.ProductDTO;
+import org.example.romashkako.exception.ProductAlreadyExistsException;
+import org.example.romashkako.exception.ProductDoesNotDeleted;
+import org.example.romashkako.exception.ProductNotFoundException;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,18 +25,21 @@ public class ProductService {
     private ProductMapper productMapper;
 
     public void createProduct(@Valid ProductDTO productDTO) {
+        String name = productDTO.getName();
+
+        if(productDAO.getProductByName(name).isPresent()){
+            throw new ProductAlreadyExistsException("Товар уже существует");
+        }
+
         Product product = productMapper.toProduct(productDTO);
         productDAO.createProduct(product);
     }
 
     public ProductDTO getProductByName(String name) {
-        Product product = productDAO.getProductByName(name).orElseThrow(IllegalAccessError::new);
-        System.out.println("Retrieved product: " + product);
-        ProductDTO productDTO = productMapper.toProductDTO(
-                product
-        );
+        Product product = productDAO.getProductByName(name).orElseThrow( () ->
+                new ProductNotFoundException("Товар не был найден"));
+        ProductDTO productDTO = productMapper.toProductDTO(product);
 
-        System.out.println("Retrieved productDto: " + productDTO);
         return productDTO;
     }
 
@@ -42,16 +47,24 @@ public class ProductService {
         List<ProductDTO> products = productDAO.getAllProducts().stream()
                 .map(productMapper::toProductDTO)
                 .collect(Collectors.toList());
+
         return products;
     }
 
     public void updateProduct(@Valid ProductDTO productDTO) {
+        String name = productDTO.getName();
+
+        if(!productDAO.getProductByName(name).isPresent()){
+            throw new ProductNotFoundException("Товар не был найден");
+        }
+
         Product product = productMapper.toProduct(productDTO);
-        System.out.println(product);
         productDAO.updateProduct(product);
     }
 
     public void deleteProduct(String name) {
-        productDAO.deleteProduct(name);
+        if(!productDAO.deleteProduct(name)){
+            throw new ProductDoesNotDeleted("Не удалось удалить товар");
+        }
     }
 }

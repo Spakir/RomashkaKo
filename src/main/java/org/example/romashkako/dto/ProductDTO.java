@@ -20,6 +20,17 @@ public class ProductDTO {
 
     private boolean inStock;
 
+    public ProductDTO(String name, String description, int price, boolean inStock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.inStock = inStock;
+    }
+
+    public ProductDTO() {
+
+    }
+
     public String getName() {
         return name;
     }
@@ -40,7 +51,7 @@ public class ProductDTO {
         this.name = name;
     }
 
-    public void setDescription( String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 

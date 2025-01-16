@@ -12,6 +12,17 @@ public class Product {
 
     private boolean inStock;
 
+    public Product(String name, String description, int price, boolean inStock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.inStock = inStock;
+    }
+
+    public Product(){
+
+    }
+
     public String getName() {
         return name;
     }

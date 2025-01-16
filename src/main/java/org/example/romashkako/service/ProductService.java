@@ -29,7 +29,7 @@ public class ProductService {
 
     public ProductDTO getProductByName(String name) {
         Product product = productDAO.getProductByName(name).orElseThrow(IllegalAccessError::new);
-        System.out.println("Retrieved product: " + product); // Логируем извлекаемый продукт
+        System.out.println("Retrieved product: " + product);
         ProductDTO productDTO = productMapper.toProductDTO(
                 product
         );

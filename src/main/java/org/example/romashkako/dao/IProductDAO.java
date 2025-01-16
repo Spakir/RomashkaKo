@@ -2,7 +2,6 @@ package org.example.romashkako.dao;
 
 import org.example.romashkako.model.Product;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +34,7 @@ public class IProductDAO implements ProductDAO {
     @Override
     public void updateProduct(Product product) {
         int index = products.indexOf(product);
+        System.out.println(index);
         if (index >= 0) {
             products.add(index, product);
         } else {

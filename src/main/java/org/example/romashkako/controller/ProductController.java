@@ -35,4 +35,9 @@ public class ProductController {
     public void updateProduct(@RequestBody ProductDTO productDTO){
         productService.updateProduct(productDTO);
     }
+
+    @DeleteMapping("/delete-{name}")
+    public void deleteProduct(@PathVariable("name") String name){
+        productService.deleteProduct(name);
+    }
 }

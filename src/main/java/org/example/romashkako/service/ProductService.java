@@ -47,6 +47,7 @@ public class ProductService {
 
     public void updateProduct(@Valid ProductDTO productDTO) {
         Product product = productMapper.toProduct(productDTO);
+        System.out.println(product);
         productDAO.updateProduct(product);
     }
 

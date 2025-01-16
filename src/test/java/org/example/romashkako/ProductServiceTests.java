@@ -55,7 +55,7 @@ public class ProductServiceTests {
     void testCreateProduct_ProductIsNotPresent() {
         String name = correctProductDTO.getName();
 
-        when(productDAO.getProductByName(name)).thenReturn(Optional.of(correctProduct));
+        when(productDAO.getProductByName(name)).thenReturn(Optional.empty());
         when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
 
         productService.createProduct(correctProductDTO);

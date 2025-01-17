@@ -31,6 +31,7 @@ public class ProductServiceTests {
     private ProductService productService;
 
     ProductDTO correctProductDTO = new ProductDTO(
+            1L,
             "Product",
             "product description",
             1,
@@ -38,6 +39,7 @@ public class ProductServiceTests {
     );
 
     Product correctProduct = new Product(
+            1L,
             "Product",
             "product description",
             1,
@@ -50,58 +52,14 @@ public class ProductServiceTests {
     }
 
     @Test
-    void testCreateProduct_ProductIsNotPresent() {
-        String name = correctProductDTO.getName();
-
-        when(productDAO.getProductByName(name)).thenReturn(Optional.empty());
+    void testCreateProduct(){
         when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
 
         productService.createProduct(correctProductDTO);
 
-        verify(productDAO,times(1)).getProductByName(name);
         verify(productDAO, times(1)).createProduct(correctProduct);
     }
 
-    @Test
-    void testCreateProduct_ProductIsPresent() {
-        String name = correctProductDTO.getName();
-        String exceptionMessage = "Товар уже существует";
-
-        when(productDAO.getProductByName(name)).thenReturn(Optional.of(correctProduct));
-
-        Exception exception = assertThrows(ProductAlreadyExistsException.class,()->
-                productService.createProduct(correctProductDTO));
-
-        verify(productDAO,times(1)).getProductByName(name);
-        assertEquals(exceptionMessage,exception.getMessage());
-    }
-
-    @Test
-    void testGetProductByName_validName_returnProductDTO() {
-        String validName = correctProductDTO.getName();
-
-        when(productDAO.getProductByName(validName)).thenReturn(Optional.of(correctProduct));
-        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
-
-        ProductDTO result = productService.getProductByName(validName);
-
-        assertEquals(correctProductDTO, result);
-        verify(productDAO, times(1)).getProductByName(validName);
-    }
-
-    @Test
-    void testGetProductByName_invalidName_returnProductDTONotFoundException() {
-        String invalidName = "invalid name";
-        String exceptionMessage = "Товар с таким названием не найден";
-
-        when(productDAO.getProductByName(invalidName)).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(ProductNotFoundException.class, () ->
-                productService.getProductByName(invalidName));
-
-        assertEquals(exceptionMessage, exception.getMessage());
-        verify(productDAO, times(1)).getProductByName(invalidName);
-    }
 
     @Test
     void testGetAllProducts_returnProductDTOList() {
@@ -119,62 +77,90 @@ public class ProductServiceTests {
     }
 
     @Test
+    void testGetProductById_existProductId_returnProductDTO(){
+        Long existProductId = correctProductDTO.getId();
+
+        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
+        when(productDAO.getProductById(existProductId)).thenReturn(Optional.of(correctProduct));
+
+        ProductDTO result = productService.getProductById(existProductId);
+
+        verify(productMapper,times(1)).toProductDTO(correctProduct);
+        verify(productDAO,times(1)).getProductById(existProductId);
+        assertEquals(correctProductDTO,result);
+    }
+
+    @Test
+    void testGetProductById_notExistProductId_returnProductNotExistsException(){
+        String exceptionMessage = "Товар с данным id не был найден";
+        Long notExistProductId = 0L;
+
+        when(productDAO.getProductById(notExistProductId)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(ProductNotFoundException.class,
+                () -> productService.getProductById(notExistProductId));
+
+        verify(productDAO,times(1)).getProductById(notExistProductId);
+        assertEquals(exceptionMessage,exception.getMessage());
+    }
+
+    @Test
     void testUpdateProduct_existProduct() {
-        String validName = correctProductDTO.getName();
+        Long existProductId = correctProductDTO.getId();
 
         when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
-        when(productDAO.getProductByName(validName)).thenReturn(Optional.of(correctProduct));
+        when(productDAO.getProductById(existProductId)).thenReturn(Optional.of(correctProduct));
 
-        assertDoesNotThrow(() -> productService.updateProduct(correctProductDTO));
+        assertDoesNotThrow(() -> productService.updateProduct(existProductId,correctProductDTO));
 
         verify(productDAO, times(1)).updateProduct(correctProduct);
-        verify(productDAO, times(1)).getProductByName(validName);
+        verify(productDAO, times(1)).getProductById(existProductId);
         verify(productMapper, times(1)).toProduct(correctProductDTO);
     }
 
     @Test
     void testUpdateProduct_notExistProduct_returnProductDTO() {
-        String invalidName = "invalidName";
         String exceptionMessage = "Товар не был найден";
-
-        ProductDTO incorrectDTO = new ProductDTO(
-                invalidName,
-                "",
+        Long notExistsId = 0L;
+        ProductDTO notExistProductDTO = new ProductDTO(
+                notExistsId,
+                "name",
+                "description",
                 0,
                 false
         );
 
-        when(productDAO.getProductByName(invalidName)).thenReturn(Optional.empty());
+        when(productDAO.getProductById(notExistsId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ProductNotFoundException.class, () ->
-                productService.updateProduct(incorrectDTO));
+                productService.updateProduct(notExistsId,notExistProductDTO));
 
-        verify(productDAO, times(1)).getProductByName(invalidName);
+        verify(productDAO, times(1)).getProductById(notExistsId);
         assertEquals(exceptionMessage, exception.getMessage());
     }
 
     @Test
     void testDeleteProduct_existProduct(){
-        String name = correctProductDTO.getName();
+        Long id = correctProductDTO.getId();
 
-        when(productDAO.deleteProduct(name)).thenReturn(true);
+        when(productDAO.deleteProduct(id)).thenReturn(true);
 
-        assertDoesNotThrow(() -> productService.deleteProduct(name));
+        assertDoesNotThrow(() -> productService.deleteProduct(id));
 
-        verify(productDAO,times(1)).deleteProduct(name);
+        verify(productDAO,times(1)).deleteProduct(id);
     }
 
     @Test
     void testDeleteProduct_notExistProduct(){
-        String name= correctProductDTO.getName();
+        Long id = correctProductDTO.getId();
         String exceptionMessage = "Не удалось удалить товар";
 
-        when(productDAO.deleteProduct(name)).thenReturn(false);
+        when(productDAO.deleteProduct(id)).thenReturn(false);
 
         Exception exception = assertThrows(ProductDoesNotDeletedException.class,() ->
-                productService.deleteProduct(name));
+                productService.deleteProduct(id));
 
-        verify(productDAO,times(1)).deleteProduct(name);
+        verify(productDAO,times(1)).deleteProduct(id);
         assertEquals(exceptionMessage,exception.getMessage());
     }
 }

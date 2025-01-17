@@ -4,6 +4,7 @@ import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -14,30 +15,28 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("/")
-    public void createProduct(@RequestBody ProductDTO productDTO){
-        System.out.println(productDTO);
+    public void createProduct(@RequestBody ProductDTO productDTO) {
         productService.createProduct(productDTO);
     }
 
     @GetMapping("/all")
-    public List<ProductDTO> getAllProducts(){
-        List<ProductDTO> products =  productService.getAllProducts();
-        System.out.println(products);
+    public List<ProductDTO> getAllProducts() {
+        List<ProductDTO> products = productService.getAllProducts();
         return products;
     }
 
-    @GetMapping("/{name}")
-    public ProductDTO getProductByName(@PathVariable(value = "name") String name){
-        return productService.getProductByName(name);
+    @GetMapping("/{id}")
+    public ProductDTO getProductById(@PathVariable(value = "id") Long id) {
+        return productService.getProductById(id);
     }
 
-    @PutMapping("/")
-    public void updateProduct(@RequestBody ProductDTO productDTO){
-        productService.updateProduct(productDTO);
+    @PutMapping("/{id}")
+    public void updateProduct(@PathVariable(name = "id") Long id, @RequestBody ProductDTO productDTO) {
+        productService.updateProduct(id, productDTO);
     }
 
-    @DeleteMapping("/{name}")
-    public void deleteProduct(@PathVariable("name") String name){
-        productService.deleteProduct(name);
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable("id") Long id) {
+        productService.deleteProduct(id);
     }
 }

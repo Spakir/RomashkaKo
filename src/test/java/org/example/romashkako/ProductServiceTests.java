@@ -3,7 +3,7 @@ package org.example.romashkako;
 import org.example.romashkako.dao.ProductDAO;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.exception.ProductAlreadyExistsException;
-import org.example.romashkako.exception.ProductDoesNotDeleted;
+import org.example.romashkako.exception.ProductDoesNotDeletedException;
 import org.example.romashkako.exception.ProductNotFoundException;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
@@ -173,7 +173,7 @@ public class ProductServiceTests {
 
         when(productDAO.deleteProduct(name)).thenReturn(false);
 
-        Exception exception = assertThrows(ProductDoesNotDeleted.class,() ->
+        Exception exception = assertThrows(ProductDoesNotDeletedException.class,() ->
                 productService.deleteProduct(name));
 
         verify(productDAO,times(1)).deleteProduct(name);

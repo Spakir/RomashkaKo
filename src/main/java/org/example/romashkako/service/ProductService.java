@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import org.example.romashkako.dao.ProductDAO;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.exception.ProductAlreadyExistsException;
-import org.example.romashkako.exception.ProductDoesNotDeleted;
+import org.example.romashkako.exception.ProductDoesNotDeletedException;
 import org.example.romashkako.exception.ProductNotFoundException;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
@@ -64,7 +64,7 @@ public class ProductService {
 
     public void deleteProduct(String name) {
         if(!productDAO.deleteProduct(name)){
-            throw new ProductDoesNotDeleted("Не удалось удалить товар");
+            throw new ProductDoesNotDeletedException("Не удалось удалить товар");
         }
     }
 }

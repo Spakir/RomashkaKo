@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public class ProductDTO {
 
+    private Long id;
+
     @NotBlank(message = "Название товара не должно быть пустым")
     @Size(max = 255, message = "Название товара не может превышать 255 символов")
     private String name;

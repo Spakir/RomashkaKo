@@ -13,30 +13,30 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping("/create")
+    @PostMapping("/")
     public void createProduct(@RequestBody ProductDTO productDTO){
         System.out.println(productDTO);
         productService.createProduct(productDTO);
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("/all")
     public List<ProductDTO> getAllProducts(){
         List<ProductDTO> products =  productService.getAllProducts();
         System.out.println(products);
         return products;
     }
 
-    @GetMapping("/get-{name}")
+    @GetMapping("/{name}")
     public ProductDTO getProductByName(@PathVariable(value = "name") String name){
         return productService.getProductByName(name);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/")
     public void updateProduct(@RequestBody ProductDTO productDTO){
         productService.updateProduct(productDTO);
     }
 
-    @DeleteMapping("/delete-{name}")
+    @DeleteMapping("/{name}")
     public void deleteProduct(@PathVariable("name") String name){
         productService.deleteProduct(name);
     }

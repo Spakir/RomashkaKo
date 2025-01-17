@@ -1,11 +1,10 @@
 package org.example.romashkako;
 
-import org.example.romashkako.dao.ProductDAO;
 import org.example.romashkako.dto.ProductDTO;
-import org.example.romashkako.exception.ProductDoesNotDeletedException;
 import org.example.romashkako.exception.ProductNotFoundException;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
+import org.example.romashkako.repository.ProductRepository;
 import org.example.romashkako.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class ProductServiceTests {
 
     @Mock
-    private ProductDAO productDAO;
+    private ProductRepository productRepository;
 
     @Mock
     private ProductMapper productMapper;
@@ -56,7 +55,7 @@ public class ProductServiceTests {
 
         productService.createProduct(correctProductDTO);
 
-        verify(productDAO, times(1)).createProduct(correctProduct);
+        verify(productRepository, times(1)).save(correctProduct);
     }
 
 
@@ -66,11 +65,11 @@ public class ProductServiceTests {
         List<Product> productList = new ArrayList<>(List.of(correctProduct));
 
         when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
-        when(productDAO.getAllProducts()).thenReturn(productList);
+        when(productRepository.findAll()).thenReturn(productList);
 
         List<ProductDTO> result = productService.getAllProducts();
 
-        verify(productDAO, times(1)).getAllProducts();
+        verify(productRepository, times(1)).findAll();
         assertEquals(productDTOList, result);
         assertEquals(1, result.size());
     }
@@ -80,12 +79,12 @@ public class ProductServiceTests {
         Long existProductId = correctProductDTO.getId();
 
         when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
-        when(productDAO.getProductById(existProductId)).thenReturn(Optional.of(correctProduct));
+        when(productRepository.findById(existProductId)).thenReturn(Optional.of(correctProduct));
 
         ProductDTO result = productService.getProductById(existProductId);
 
         verify(productMapper, times(1)).toProductDTO(correctProduct);
-        verify(productDAO, times(1)).getProductById(existProductId);
+        verify(productRepository, times(1)).findById(existProductId);
         assertEquals(correctProductDTO, result);
     }
 
@@ -94,12 +93,12 @@ public class ProductServiceTests {
         String exceptionMessage = "Товар с данным id не был найден";
         Long notExistProductId = 0L;
 
-        when(productDAO.getProductById(notExistProductId)).thenReturn(Optional.empty());
+        when(productRepository.findById(notExistProductId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ProductNotFoundException.class,
                 () -> productService.getProductById(notExistProductId));
 
-        verify(productDAO, times(1)).getProductById(notExistProductId);
+        verify(productRepository, times(1)).findById(notExistProductId);
         assertEquals(exceptionMessage, exception.getMessage());
     }
 
@@ -108,12 +107,12 @@ public class ProductServiceTests {
         Long existProductId = correctProductDTO.getId();
 
         when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
-        when(productDAO.getProductById(existProductId)).thenReturn(Optional.of(correctProduct));
+        when(productRepository.findById(existProductId)).thenReturn(Optional.of(correctProduct));
 
         assertDoesNotThrow(() -> productService.updateProduct(existProductId, correctProductDTO));
 
-        verify(productDAO, times(1)).updateProduct(correctProduct);
-        verify(productDAO, times(1)).getProductById(existProductId);
+        verify(productRepository, times(1)).save(correctProduct);
+        verify(productRepository, times(1)).findById(existProductId);
         verify(productMapper, times(1)).toProduct(correctProductDTO);
     }
 
@@ -129,12 +128,12 @@ public class ProductServiceTests {
                 false
         );
 
-        when(productDAO.getProductById(notExistsId)).thenReturn(Optional.empty());
+        when(productRepository.findById(notExistsId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ProductNotFoundException.class, () ->
                 productService.updateProduct(notExistsId, notExistProductDTO));
 
-        verify(productDAO, times(1)).getProductById(notExistsId);
+        verify(productRepository, times(1)).findById(notExistsId);
         assertEquals(exceptionMessage, exception.getMessage());
     }
 
@@ -142,24 +141,8 @@ public class ProductServiceTests {
     void testDeleteProduct_existProduct() {
         Long id = correctProductDTO.getId();
 
-        when(productDAO.deleteProduct(id)).thenReturn(true);
-
         assertDoesNotThrow(() -> productService.deleteProduct(id));
 
-        verify(productDAO, times(1)).deleteProduct(id);
-    }
-
-    @Test
-    void testDeleteProduct_notExistProduct() {
-        Long id = correctProductDTO.getId();
-        String exceptionMessage = "Не удалось удалить товар";
-
-        when(productDAO.deleteProduct(id)).thenReturn(false);
-
-        Exception exception = assertThrows(ProductDoesNotDeletedException.class, () ->
-                productService.deleteProduct(id));
-
-        verify(productDAO, times(1)).deleteProduct(id);
-        assertEquals(exceptionMessage, exception.getMessage());
+        verify(productRepository, times(1)).deleteById(id);
     }
 }

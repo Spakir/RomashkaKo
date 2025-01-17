@@ -8,14 +8,12 @@ public interface ProductDAO {
 
     void createProduct(Product product);
 
-    Optional<Product> getProductByName(String name);
+
+    Optional<Product> getProductById(Long id);
 
     List<Product> getAllProducts();
 
     void updateProduct(Product product);
 
-    boolean deleteProduct(String name);
-
-
-
+    boolean deleteProduct(Long id);
 }

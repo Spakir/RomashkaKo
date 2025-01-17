@@ -1,0 +1,18 @@
+spring:
+  application:
+  name: RomashkaKo
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: admin
+    password: admin123
+    url: jdbc:postgresql://localhost:5432/romashka-ko_db
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: /db

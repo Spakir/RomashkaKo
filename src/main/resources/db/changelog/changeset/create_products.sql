@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS Products
+(
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(4096),
+    price INTEGER DEFAULT 0 CHECK ( price >= 0 ),
+    in_stock BOOLEAN DEFAULT FALSE
+);

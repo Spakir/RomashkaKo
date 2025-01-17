@@ -15,4 +15,4 @@ spring:
 
   liquibase:
     enabled: true
-    change-log: /db
+    change-log: /db/changelog/master-db.yaml

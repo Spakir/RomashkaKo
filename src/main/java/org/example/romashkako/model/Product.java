@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class Product {
 
+    private Long id;
+
     private String name;
 
     private String description;
@@ -13,6 +15,14 @@ public class Product {
     private boolean inStock;
 
     public Product(String name, String description, int price, boolean inStock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.inStock = inStock;
+    }
+
+    public Product(Long id, String name, String description, int price, boolean inStock) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -55,26 +65,32 @@ public class Product {
         this.inStock = inStock;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return price == product.price &&
-                inStock == product.inStock &&
-                Objects.equals(name, product.name) &&
-                Objects.equals(description, product.description);
+        return Objects.equals(id,product.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, price, inStock);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", price=" + price +
                 ", inStock=" + inStock +

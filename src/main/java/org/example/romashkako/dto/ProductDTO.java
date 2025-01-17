@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public class ProductDTO {
 
+    private Long id;
+
     @NotBlank(message = "Название товара не должно быть пустым")
     @Size(max = 255, message = "Название товара не может превышать 255 символов")
     private String name;
@@ -21,6 +23,14 @@ public class ProductDTO {
     private boolean inStock;
 
     public ProductDTO(String name, String description, int price, boolean inStock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.inStock = inStock;
+    }
+
+    public ProductDTO(Long id, String name, String description, int price, boolean inStock) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -63,28 +73,34 @@ public class ProductDTO {
         this.inStock = inStock;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductDTO that = (ProductDTO) o;
-        return inStock == that.inStock &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(price, that.price);
+        return Objects.equals(that.id,this.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, price, inStock);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "ProductDto{" +
-                "name='" + name + '\'' +
+        return "ProductDTO{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", price='" + price + '\'' +
+                ", price=" + price +
                 ", inStock=" + inStock +
                 '}';
     }

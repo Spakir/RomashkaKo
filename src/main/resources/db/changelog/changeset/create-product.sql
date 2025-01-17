@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS Product
+(
+    name VARCHAR(255) PRIMARY KEY NOT NULL,
+    description VARCHAR(4096),
+    price INTEGER DEFAULT 0 CHECK ( price >= 0 ),
+    in_stock BOOLEAN DEFAULT FALSE
+)

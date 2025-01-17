@@ -8,7 +8,6 @@ public interface ProductDAO {
 
     void createProduct(Product product);
 
-
     Optional<Product> getProductById(Long id);
 
     List<Product> getAllProducts();

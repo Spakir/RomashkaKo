@@ -1,8 +1,7 @@
 package org.example.romashkako.handler;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
-import org.example.romashkako.exception.ProductDoesNotDeletedException;
-import org.example.romashkako.exception.ProductNotFoundException;
 import org.example.romashkako.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +18,9 @@ public class RestExceptionHandler {
         return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException exception) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductNotFoundException(EntityNotFoundException exception) {
         ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(ProductDoesNotDeletedException.class)
-    public ResponseEntity<ErrorResponse> handleProductDoesNotDeletedException(ProductDoesNotDeletedException exception) {
-        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), exception.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

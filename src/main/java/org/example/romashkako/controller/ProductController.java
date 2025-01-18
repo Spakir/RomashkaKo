@@ -20,7 +20,8 @@ public class ProductController {
 
     @PostMapping("/")
     @ApiOperation(value = "Создание нового товара")
-    public void createProduct(@ApiParam(value = "данные добавляемого товара") @RequestBody ProductDTO productDTO) {
+    public void createProduct(@ApiParam(value = "данные добавляемого товара")
+                                  @RequestBody ProductDTO productDTO) {
         productService.createProduct(productDTO);
     }
 
@@ -32,17 +33,23 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductDTO getProductById(@PathVariable(value = "id") Long id) {
+    @ApiOperation(value = "Получение товара по ID")
+    public ProductDTO getProductById(@ApiParam(value = "ID искомого товара")
+                                         @PathVariable(value = "id") Long id) {
         return productService.getProductById(id);
     }
 
     @PutMapping("/{id}")
-    public void updateProduct(@PathVariable(name = "id") Long id, @RequestBody ProductDTO productDTO) {
+    @ApiOperation(value = "Обновление товара с указанным ID")
+    public void updateProduct(@ApiParam(value = "ID товара,который надо обновить")
+                                  @PathVariable(name = "id") Long id, @RequestBody ProductDTO productDTO) {
         productService.updateProduct(id, productDTO);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable("id") Long id) {
+    @ApiOperation(value = "Удаление товара с указанным ID")
+    public void deleteProduct(@ApiParam(value = "ID товара,который надо удалить")
+                                  @PathVariable("id") Long id) {
         productService.deleteProduct(id);
     }
 }

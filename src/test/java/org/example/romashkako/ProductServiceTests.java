@@ -51,12 +51,17 @@ public class ProductServiceTests {
     }
 
     @Test
-    void testCreateProduct() {
+    void testCreateProduct_returnSavedProductDTO() {
         when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
+        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
+        when(productDAO.createProduct(correctProduct)).thenReturn(correctProduct);
 
-        productService.createProduct(correctProductDTO);
 
+        ProductDTO result = productService.createProduct(correctProductDTO);
+
+        verify(productMapper, times(1)).toProduct(correctProductDTO);
         verify(productDAO, times(1)).createProduct(correctProduct);
+        assertEquals(correctProductDTO, result);
     }
 
 
@@ -105,34 +110,31 @@ public class ProductServiceTests {
 
     @Test
     void testUpdateProduct_existProduct() {
-        Long existProductId = correctProductDTO.getId();
+        Long existProductId = correctProduct.getId();
 
-        when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
         when(productDAO.getProductById(existProductId)).thenReturn(Optional.of(correctProduct));
+        when(productDAO.updateProduct(correctProduct)).thenReturn(correctProduct);
+        when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
+        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
 
-        assertDoesNotThrow(() -> productService.updateProduct(existProductId, correctProductDTO));
+        ProductDTO result = productService.updateProduct(existProductId, correctProductDTO);
 
-        verify(productDAO, times(1)).updateProduct(correctProduct);
         verify(productDAO, times(1)).getProductById(existProductId);
+        verify(productDAO, times(1)).updateProduct(correctProduct);
+        verify(productMapper, times(1)).toProductDTO(correctProduct);
         verify(productMapper, times(1)).toProduct(correctProductDTO);
+        assertEquals(correctProductDTO, result);
     }
 
     @Test
     void testUpdateProduct_notExistProduct_returnProductDTO() {
-        String exceptionMessage = "Товар не был найден";
+        String exceptionMessage = "Товар с данным id не был найден";
         Long notExistsId = 0L;
-        ProductDTO notExistProductDTO = new ProductDTO(
-                notExistsId,
-                "name",
-                "description",
-                0,
-                false
-        );
 
         when(productDAO.getProductById(notExistsId)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ProductNotFoundException.class, () ->
-                productService.updateProduct(notExistsId, notExistProductDTO));
+                productService.updateProduct(notExistsId, correctProductDTO));
 
         verify(productDAO, times(1)).getProductById(notExistsId);
         assertEquals(exceptionMessage, exception.getMessage());

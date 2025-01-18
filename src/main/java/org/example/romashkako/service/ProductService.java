@@ -23,9 +23,12 @@ public class ProductService {
     @Autowired
     private ProductMapper productMapper;
 
-    public void createProduct(@Valid ProductDTO productDTO) {
+    public ProductDTO createProduct(@Valid ProductDTO productDTO) {
         Product product = productMapper.toProduct(productDTO);
-        productDAO.createProduct(product);
+        Product createdProduct = productDAO.createProduct(product);
+        ProductDTO createdProductDTO = productMapper.toProductDTO(createdProduct);
+
+        return createdProductDTO;
     }
 
     public List<ProductDTO> getAllProducts() {
@@ -44,15 +47,17 @@ public class ProductService {
         return productDTO;
     }
 
-    public void updateProduct(Long id,@Valid ProductDTO productDTO) {
+    public ProductDTO updateProduct(Long id,@Valid ProductDTO productDTO) {
         if(!productDAO.getProductById(id).isPresent()){
             throw new ProductNotFoundException("Товар с данным id не был найден");
         }
 
         productDTO.setId(id);
         Product product = productMapper.toProduct(productDTO);
+        Product updatedProduct = productDAO.updateProduct(product);
+        ProductDTO updatedProductDTO = productMapper.toProductDTO(updatedProduct);
 
-        productDAO.updateProduct(product);
+        return updatedProductDTO;
     }
 
     public void deleteProduct(Long id) {

@@ -15,9 +15,11 @@ public class IProductDAO implements ProductDAO {
     private AtomicLong idCounter = new AtomicLong(0);
 
     @Override
-    public void createProduct(Product product) {
+    public Product createProduct(Product product) {
         product.setId(idCounter.incrementAndGet());
         products.add(product);
+
+        return product;
     }
 
     @Override
@@ -33,12 +35,13 @@ public class IProductDAO implements ProductDAO {
     }
 
     @Override
-    public void updateProduct(Product product) {
+    public Product updateProduct(Product product) {
         int index = products.indexOf(product);
         if (index >= 0) {
             products.set(index, product);
-            System.out.println(products);
         }
+
+        return product;
     }
 
     @Override

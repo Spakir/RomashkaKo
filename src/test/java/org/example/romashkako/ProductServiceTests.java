@@ -58,7 +58,6 @@ public class ProductServiceTests {
         verify(productRepository, times(1)).save(correctProduct);
     }
 
-
     @Test
     void testGetAllProducts_returnProductDTOList() {
         List<ProductDTO> productDTOList = new ArrayList<>(List.of(correctProductDTO));

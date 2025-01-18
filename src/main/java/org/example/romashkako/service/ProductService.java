@@ -46,7 +46,7 @@ public class ProductService {
 
     public void updateProduct(Long id,@Valid ProductDTO productDTO) {
         if(!productDAO.getProductById(id).isPresent()){
-            throw new ProductNotFoundException("Товар не был найден");
+            throw new ProductNotFoundException("Товар с данным id не был найден");
         }
 
         productDTO.setId(id);

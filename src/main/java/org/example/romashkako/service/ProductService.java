@@ -1,8 +1,8 @@
 package org.example.romashkako.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
-import org.example.romashkako.exception.ProductNotFoundException;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
@@ -22,9 +22,12 @@ public class ProductService {
     @Autowired
     private ProductMapper productMapper;
 
-    public void createProduct(@Valid ProductDTO productDTO) {
+    public ProductDTO createProduct(@Valid ProductDTO productDTO) {
         Product product = productMapper.toProduct(productDTO);
-        productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        ProductDTO savedProductDTO = productMapper.toProductDTO(savedProduct);
+
+        return savedProductDTO;
     }
 
     public List<ProductDTO> getAllProducts() {
@@ -37,24 +40,29 @@ public class ProductService {
 
     public ProductDTO getProductById(Long id){
         Product product = productRepository.findById(id).orElseThrow(() ->
-                new ProductNotFoundException("Товар с данным id не был найден"));
+                new EntityNotFoundException("Товар с данным id не был найден"));
         ProductDTO productDTO = productMapper.toProductDTO(product);
 
         return productDTO;
     }
 
-    public void updateProduct(Long id,@Valid ProductDTO productDTO) {
+    public ProductDTO updateProduct(Long id,@Valid ProductDTO productDTO) {
         if(!productRepository.findById(id).isPresent()){
-            throw new ProductNotFoundException("Товар не был найден");
+            throw new EntityNotFoundException("Товар с данным id не был найден");
         }
 
         productDTO.setId(id);
         Product product = productMapper.toProduct(productDTO);
+        Product updatedProduct = productRepository.save(product);
+        ProductDTO updatedProductDTO = productMapper.toProductDTO(updatedProduct);
 
-        productRepository.save(product);
+        return updatedProductDTO;
     }
 
-    public void deleteProduct(Long id) {
+    public void deleteProductById(Long id) {
+        if(!productRepository.findById(id).isPresent()){
+            throw new EntityNotFoundException("Товар с данным ID не был найден");
+        }
         productRepository.deleteById(id);
     }
 }

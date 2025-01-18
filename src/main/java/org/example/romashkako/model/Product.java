@@ -1,13 +1,11 @@
 package org.example.romashkako.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
+@Table(name = "Products")
 public class Product {
 
     @Id
@@ -20,6 +18,7 @@ public class Product {
 
     private int price;
 
+    @Column(name = "in_stock")
     private boolean inStock;
 
     public Product(String name, String description, int price, boolean inStock) {

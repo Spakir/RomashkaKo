@@ -1,6 +1,5 @@
 package org.example.romashkako.service;
 
-import io.swagger.models.auth.In;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
@@ -8,9 +7,11 @@ import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,22 +36,24 @@ public class ProductService {
     public List<ProductDTO> getAllProducts(String filterName,
                                            Integer minPrice,
                                            Integer maxPrice,
-                                           Boolean inStock) {
-        System.out.println(filterName);
-        System.out.println(minPrice);
-        System.out.println(maxPrice);
-        System.out.println(inStock);
-        List<ProductDTO> products = null;
-        if (filterName == null) {
-            products = productRepository.findAll().stream()
-                    .map(productMapper::toProductDTO)
-                    .collect(Collectors.toList());
-        } else {
-            products = productRepository.findByFilters(filterName,minPrice,maxPrice,inStock)
-                    .stream()
-                    .map(productMapper::toProductDTO)
-                    .collect(Collectors.toList());
+                                           Boolean inStock,
+                                           int limit,
+                                           String sortType,
+                                           String sortDirection) {
+        Sort sort = null;
+
+        if (sortType != null && sortDirection != null) {
+            sort = Sort.by(Sort.Direction.fromString(sortDirection), sortType);
         }
+
+        Pageable pageable = (sort != null) ? PageRequest.of(0, limit, sort)
+                : PageRequest.of(0, limit);
+
+        List<ProductDTO> products = null;
+        products = productRepository.findByFilters(filterName, minPrice, maxPrice, inStock, pageable)
+                .stream()
+                .map(productMapper::toProductDTO)
+                .collect(Collectors.toList());
 
         return products;
     }

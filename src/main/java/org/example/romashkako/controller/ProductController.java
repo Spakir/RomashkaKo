@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import org.example.romashkako.dto.ProductDTO;
@@ -52,9 +53,11 @@ public class ProductController {
             int limit,
 
             @RequestParam(required = false)
+            @Pattern(regexp = "^(name|price)$", message = "Тип сортировки должен быть 'name' или 'price'")
             String sortType,
 
             @RequestParam(required = false)
+            @Pattern(regexp = "^(ASC|DESC)$", message = "Направление сортировки должно быть 'ASC' или 'DESC'")
             String sortDirection) {
         List<ProductDTO> products = productService.getAllProducts(filterName,
                 minPrice,

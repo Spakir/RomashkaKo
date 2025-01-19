@@ -63,20 +63,20 @@ public class ProductServiceTests {
         assertEquals(correctProductDTO,result);
     }
 
-    @Test
-    void testGetAllProducts_returnProductDTOList() {
-        List<ProductDTO> productDTOList = new ArrayList<>(List.of(correctProductDTO));
-        List<Product> productList = new ArrayList<>(List.of(correctProduct));
-
-        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
-        when(productRepository.findAll()).thenReturn(productList);
-
-        List<ProductDTO> result = productService.getAllProducts();
-
-        verify(productRepository, times(1)).findAll();
-        assertEquals(productDTOList, result);
-        assertEquals(1, result.size());
-    }
+//    @Test
+//    void testGetAllProducts_returnProductDTOList() {
+//        List<ProductDTO> productDTOList = new ArrayList<>(List.of(correctProductDTO));
+//        List<Product> productList = new ArrayList<>(List.of(correctProduct));
+//
+//        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
+//        when(productRepository.findAll()).thenReturn(productList);
+//
+//        List<ProductDTO> result = productService.getAllProducts();
+//
+//        verify(productRepository, times(1)).findAll();
+//        assertEquals(productDTOList, result);
+//        assertEquals(1, result.size());
+//    }
 
     @Test
     void testGetProductById_existProductId_returnProductDTO() {

@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.service.ProductService;
@@ -31,7 +32,7 @@ public class ProductController {
     @GetMapping("/all")
     @ApiOperation(value = "Получение всех товаров")
     public List<ProductDTO> getAllProducts(
-            @RequestParam(required = false)
+            @RequestParam(required = false,defaultValue = "")
             @Size(max = 255, message = "Название товара не должно превышать 255 символов")
             String filterName,
 
@@ -44,8 +45,24 @@ public class ProductController {
             Integer maxPrice,
 
             @RequestParam(required = false)
-            Boolean inStock) {
-        List<ProductDTO> products = productService.getAllProducts(filterName, minPrice, maxPrice, inStock);
+            Boolean inStock,
+
+            @RequestParam(defaultValue = "50")
+            @Positive(message = "Лимит возвращаемых товаров должен быть больше 0")
+            int limit,
+
+            @RequestParam(required = false)
+            String sortType,
+
+            @RequestParam(required = false)
+            String sortDirection) {
+        List<ProductDTO> products = productService.getAllProducts(filterName,
+                minPrice,
+                maxPrice,
+                inStock,
+                limit,
+                sortType,
+                sortDirection);
 
         return products;
     }

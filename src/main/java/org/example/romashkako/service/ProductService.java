@@ -1,5 +1,6 @@
 package org.example.romashkako.service;
 
+import io.swagger.models.auth.In;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
@@ -31,15 +32,21 @@ public class ProductService {
         return savedProductDTO;
     }
 
-    public List<ProductDTO> getAllProducts(String filterName) {
+    public List<ProductDTO> getAllProducts(String filterName,
+                                           Integer minPrice,
+                                           Integer maxPrice,
+                                           Boolean inStock) {
         System.out.println(filterName);
+        System.out.println(minPrice);
+        System.out.println(maxPrice);
+        System.out.println(inStock);
         List<ProductDTO> products = null;
         if (filterName == null) {
             products = productRepository.findAll().stream()
                     .map(productMapper::toProductDTO)
                     .collect(Collectors.toList());
         } else {
-            products = productRepository.findByNameContainingIgnoreCase(filterName)
+            products = productRepository.findByFilters(filterName,minPrice,maxPrice,inStock)
                     .stream()
                     .map(productMapper::toProductDTO)
                     .collect(Collectors.toList());

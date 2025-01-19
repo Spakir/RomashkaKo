@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -22,5 +24,11 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorResponse> handleProductNotFoundException(EntityNotFoundException exception) {
         ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),exception.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
     }
 }

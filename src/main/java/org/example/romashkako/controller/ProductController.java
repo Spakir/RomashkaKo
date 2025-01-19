@@ -27,8 +27,8 @@ public class ProductController {
 
     @GetMapping("/all")
     @ApiOperation(value = "Получение всех товаров")
-    public List<ProductDTO> getAllProducts() {
-        List<ProductDTO> products = productService.getAllProducts();
+    public List<ProductDTO> getAllProducts(@RequestParam(required = false) String filterName) {
+        List<ProductDTO> products = productService.getAllProducts(filterName);
         return products;
     }
 

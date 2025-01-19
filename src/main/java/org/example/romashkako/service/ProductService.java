@@ -9,6 +9,7 @@ import org.example.romashkako.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,15 +31,24 @@ public class ProductService {
         return savedProductDTO;
     }
 
-    public List<ProductDTO> getAllProducts() {
-        List<ProductDTO> products = productRepository.findAll().stream()
-                .map(productMapper::toProductDTO)
-                .collect(Collectors.toList());
+    public List<ProductDTO> getAllProducts(String filterName) {
+        System.out.println(filterName);
+        List<ProductDTO> products = null;
+        if (filterName == null) {
+            products = productRepository.findAll().stream()
+                    .map(productMapper::toProductDTO)
+                    .collect(Collectors.toList());
+        } else {
+            products = productRepository.findByNameContainingIgnoreCase(filterName)
+                    .stream()
+                    .map(productMapper::toProductDTO)
+                    .collect(Collectors.toList());
+        }
 
         return products;
     }
 
-    public ProductDTO getProductById(Long id){
+    public ProductDTO getProductById(Long id) {
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Товар с данным id не был найден"));
         ProductDTO productDTO = productMapper.toProductDTO(product);
@@ -46,8 +56,8 @@ public class ProductService {
         return productDTO;
     }
 
-    public ProductDTO updateProduct(Long id,@Valid ProductDTO productDTO) {
-        if(!productRepository.findById(id).isPresent()){
+    public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
+        if (!productRepository.findById(id).isPresent()) {
             throw new EntityNotFoundException("Товар с данным id не был найден");
         }
 
@@ -60,7 +70,7 @@ public class ProductService {
     }
 
     public void deleteProductById(Long id) {
-        if(!productRepository.findById(id).isPresent()){
+        if (!productRepository.findById(id).isPresent()) {
             throw new EntityNotFoundException("Товар с данным ID не был найден");
         }
         productRepository.deleteById(id);

@@ -31,4 +31,10 @@ public class RestExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),exception.getMessage());
         return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(IllegalAccessError.class)
+    public ResponseEntity<ErrorResponse> handleIllegalAccessError(IllegalAccessError exception){
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),exception.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
+    }
 }

@@ -147,9 +147,11 @@ public class ProductServiceTests {
     @Test
     void testDeleteProduct_existProduct() {
         Long id = correctProductDTO.getId();
+        when(productRepository.findById(id)).thenReturn(Optional.of(correctProduct));
 
         assertDoesNotThrow(() -> productService.deleteProductById(id));
 
+        verify(productRepository,times(1)).findById(id);
         verify(productRepository, times(1)).deleteById(id);
     }
 

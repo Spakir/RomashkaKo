@@ -33,7 +33,7 @@ public class ProductController {
     @GetMapping("/all")
     @ApiOperation(value = "Получение всех товаров")
     public List<ProductDTO> getAllProducts(
-            @RequestParam(required = false,defaultValue = "")
+            @RequestParam(required = false)
             @Size(max = 255, message = "Название товара не должно превышать 255 символов")
             String filterName,
 
@@ -48,7 +48,7 @@ public class ProductController {
             @RequestParam(required = false)
             Boolean inStock,
 
-            @RequestParam(defaultValue = "50")
+            @RequestParam(defaultValue = "10")
             @Positive(message = "Лимит возвращаемых товаров должен быть больше 0")
             int limit,
 

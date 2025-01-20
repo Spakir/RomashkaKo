@@ -41,14 +41,8 @@ public class ProductService {
                                            int page,
                                            String sortType,
                                            String sortDirection) {
-        Sort sort = null;
-
-        if (sortType != null && sortDirection != null) {
-            sort = Sort.by(Sort.Direction.fromString(sortDirection), sortType);
-        }
-
-        Pageable pageable = (sort != null) ? PageRequest.of(0, limit, sort) :
-                PageRequest.of(page, limit);
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortType);
+        Pageable pageable =  PageRequest.of(page, limit, sort);
 
         List<ProductDTO> products = null;
         products = productRepository.findByFilters(filterName, minPrice, maxPrice, inStock, pageable)

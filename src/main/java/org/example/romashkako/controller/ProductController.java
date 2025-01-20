@@ -56,11 +56,11 @@ public class ProductController {
             @Min(value = 0, message = "Страница не может быть отрицательным числом")
             int page,
 
-            @RequestParam(required = false)
+            @RequestParam(required = false,defaultValue = "name")
             @Pattern(regexp = "^(name|price)$", message = "Тип сортировки должен быть 'name' или 'price'")
             String sortType,
 
-            @RequestParam(required = false)
+            @RequestParam(required = false,defaultValue = "ASC")
             @Pattern(regexp = "^(ASC|DESC)$", message = "Направление сортировки должно быть 'ASC' или 'DESC'")
             String sortDirection) {
         List<ProductDTO> products = productService.getAllProducts(filterName,

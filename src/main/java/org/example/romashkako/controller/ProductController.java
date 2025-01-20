@@ -52,6 +52,10 @@ public class ProductController {
             @Positive(message = "Лимит возвращаемых товаров должен быть больше 0")
             int limit,
 
+            @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "Страница не может быть отрицательным числом")
+            int page,
+
             @RequestParam(required = false)
             @Pattern(regexp = "^(name|price)$", message = "Тип сортировки должен быть 'name' или 'price'")
             String sortType,
@@ -64,6 +68,7 @@ public class ProductController {
                 maxPrice,
                 inStock,
                 limit,
+                page,
                 sortType,
                 sortDirection);
 

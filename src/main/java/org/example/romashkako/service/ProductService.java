@@ -46,8 +46,8 @@ public class ProductService {
             sort = Sort.by(Sort.Direction.fromString(sortDirection), sortType);
         }
 
-        Pageable pageable = (sort != null) ? PageRequest.of(0, limit, sort)
-                : PageRequest.of(0, limit);
+        Pageable pageable = (sort != null) ? PageRequest.of(0, limit, sort) :
+                PageRequest.of(0, limit);
 
         List<ProductDTO> products = null;
         products = productRepository.findByFilters(filterName, minPrice, maxPrice, inStock, pageable)

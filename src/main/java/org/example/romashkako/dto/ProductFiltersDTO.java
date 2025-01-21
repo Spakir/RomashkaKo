@@ -1,11 +1,8 @@
 package org.example.romashkako.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
-public class ProductFilterDTO {
+public class ProductFiltersDTO {
 
     @Size(max = 255, message = "Название товара не должно превышать 255 символов")
     private String filterName;
@@ -22,13 +19,27 @@ public class ProductFilterDTO {
     private int limit = 10;
 
     @Min(value = 0, message = "Страница не может быть отрицательным числом")
-    private int page = 0;
+    private int page;
 
     @Pattern(regexp = "^(name|price)$", message = "Тип сортировки должен быть 'name' или 'price'")
     private String sortType = "name";
 
     @Pattern(regexp = "^(ASC|DESC)$", message = "Направление сортировки должно быть 'ASC' или 'DESC'")
     private String sortDirection = "DESC";
+
+    public ProductFiltersDTO(){
+    }
+
+    public ProductFiltersDTO(String filterName, Integer minPrice, Integer maxPrice, Boolean inStock, int limit, int page, String sortType, String sortDirection) {
+        this.filterName = filterName;
+        this.minPrice = minPrice;
+        this.maxPrice = maxPrice;
+        this.inStock = inStock;
+        this.limit = limit;
+        this.page = page;
+        this.sortType = sortType;
+        this.sortDirection = sortDirection;
+    }
 
     public String getFilterName() {
         return filterName;
@@ -92,5 +103,14 @@ public class ProductFilterDTO {
 
     public void setSortDirection(String sortDirection) {
         this.sortDirection = sortDirection;
+    }
+
+    @AssertTrue(message = "Минимальная цена не может быть выше максимальной")
+    private boolean isPriceRangeValid(){
+        if(minPrice == null || maxPrice == null){
+            return true;
+        }
+
+        return minPrice <= maxPrice;
     }
 }

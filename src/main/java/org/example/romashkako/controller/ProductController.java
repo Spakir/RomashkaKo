@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
-import org.example.romashkako.dto.ProductFilterDTO;
+import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +30,7 @@ public class ProductController {
 
     @GetMapping("/all")
     @ApiOperation(value = "Получение всех товаров")
-    public List<ProductDTO> getAllProducts(@Valid @ModelAttribute ProductFilterDTO filters) {
+    public List<ProductDTO> getAllProducts(@Valid @ModelAttribute ProductFiltersDTO filters) {
         List<ProductDTO> products = productService.getAllProducts(filters);
 
         return products;

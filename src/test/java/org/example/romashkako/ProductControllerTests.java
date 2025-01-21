@@ -2,6 +2,7 @@ package org.example.romashkako;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.example.romashkako.controller.ProductController;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductFiltersDTO;
@@ -139,6 +140,21 @@ public class ProductControllerTests {
                 .andExpect(status().isOk());
 
         verify(productService, times(1)).deleteProductById(existProductId);
+    }
+
+    @Test
+    public void testDeleteProductById_returnEntityNotFoundException() throws Exception {
+        Long notExistProductId = 0L;
+
+        doThrow(new EntityNotFoundException("Товар с данным ID не найден"))
+                .when(productService).deleteProductById(notExistProductId);
+
+        mockMvc.perform(delete("/api/product/{id}",notExistProductId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage").value("Товар с данным ID не найден"));
+
+        verify(productService,times(1)).deleteProductById(notExistProductId);
     }
 
     @Test

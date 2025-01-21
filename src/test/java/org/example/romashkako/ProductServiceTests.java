@@ -2,6 +2,7 @@ package org.example.romashkako;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.example.romashkako.dto.ProductDTO;
+import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
@@ -11,6 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +33,7 @@ public class ProductServiceTests {
     @InjectMocks
     private ProductService productService;
 
+
     ProductDTO correctProductDTO = new ProductDTO(
             1L,
             "Product",
@@ -42,6 +48,17 @@ public class ProductServiceTests {
             "product description",
             1,
             true
+    );
+
+    ProductFiltersDTO correctProductFiltersDTO = new ProductFiltersDTO(
+            "Product",
+            0,
+            1,
+            true,
+            1,
+            0,
+            "name",
+            "ASC"
     );
 
     @BeforeEach
@@ -63,20 +80,33 @@ public class ProductServiceTests {
         assertEquals(correctProductDTO,result);
     }
 
-//    @Test
-//    void testGetAllProducts_returnProductDTOList() {
-//        List<ProductDTO> productDTOList = new ArrayList<>(List.of(correctProductDTO));
-//        List<Product> productList = new ArrayList<>(List.of(correctProduct));
-//
-//        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
-//        when(productRepository.findAll()).thenReturn(productList);
-//
-//        List<ProductDTO> result = productService.getAllProducts();
-//
-//        verify(productRepository, times(1)).findAll();
-//        assertEquals(productDTOList, result);
-//        assertEquals(1, result.size());
-//    }
+    @Test
+    void testGetAllProducts_validProductFiltersDTO_returnProductDTOList() {
+        List<ProductDTO> productDTOList = new ArrayList<>(List.of(correctProductDTO));
+        List<Product> productList = new ArrayList<>(List.of(correctProduct));
+
+        String filterName = correctProductFiltersDTO.getFilterName();
+        Integer minPrice = correctProductFiltersDTO.getMinPrice();
+        Integer maxPrice = correctProductFiltersDTO.getMaxPrice();
+        Boolean inStock = correctProductFiltersDTO.getInStock();
+        int limit = correctProductFiltersDTO.getLimit();
+        int page = correctProductFiltersDTO.getPage();
+        String sortType = correctProductFiltersDTO.getSortType();
+        String sortDirection = correctProductFiltersDTO.getSortDirection();
+
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortType);
+        Pageable pageable =  PageRequest.of(page, limit, sort);
+
+
+        when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
+        when(productRepository.findByFilters(filterName,minPrice,maxPrice,inStock,pageable)).thenReturn(productList);
+
+        List<ProductDTO> result = productService.getAllProducts(correctProductFiltersDTO);
+
+        verify(productRepository, times(1)).findByFilters(filterName,minPrice,maxPrice,inStock,pageable);
+        assertEquals(productDTOList, result);
+        assertEquals(1, result.size());
+    }
 
     @Test
     void testGetProductById_existProductId_returnProductDTO() {
@@ -94,7 +124,7 @@ public class ProductServiceTests {
 
     @Test
     void testGetProductById_notExistProductId_returnProductNotExistsException() {
-        String exceptionMessage = "Товар с данным id не был найден";
+        String exceptionMessage = "Товар с данным ID не был найден";
         Long notExistProductId = 0L;
 
         when(productRepository.findById(notExistProductId)).thenReturn(Optional.empty());
@@ -125,7 +155,7 @@ public class ProductServiceTests {
 
     @Test
     void testUpdateProduct_notExistProduct_returnProductNotFoundException() {
-        String exceptionMessage = "Товар с данным id не был найден";
+        String exceptionMessage = "Товар с данным ID не был найден";
         Long notExistsId = 0L;
         ProductDTO notExistProductDTO = new ProductDTO(
                 notExistsId,

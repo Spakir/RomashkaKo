@@ -50,7 +50,12 @@ public class ProductFiltersDTO {
         this.sortDirection = sortDirection;
     }
 
-    public ProductFiltersDTO(String filterName, Integer minPrice, Integer maxPrice, Boolean inStock, int limit, int page) {
+    public ProductFiltersDTO(String filterName,
+                             Integer minPrice,
+                             Integer maxPrice,
+                             Boolean inStock,
+                             int limit,
+                             int page) {
         this.filterName = filterName;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;

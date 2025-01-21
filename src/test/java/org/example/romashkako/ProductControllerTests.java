@@ -122,4 +122,14 @@ public class ProductControllerTests {
 
         verify(productService,times(1)).updateProduct(existProductId,productDTOForUpdate);
     }
+
+    @Test
+    public void testDeleteProductById_returnStatusOK() throws Exception {
+        Long existProductId = 1L;
+
+        mockMvc.perform(delete("/api/product/{id}",existProductId))
+                .andExpect(status().isOk());
+
+        verify(productService,times(1)).deleteProductById(existProductId);
+    }
 }

@@ -304,6 +304,21 @@ public class ProductControllerTests {
         mockMvc.perform(get("/api/product/all")
                         .param("sortDirection", badParamSortDirection))
                 .andExpect(jsonPath("$.timeStamp").exists())
-                .andExpect(jsonPath("$.errorMessage").value("Направление сортировки должно быть 'ASC' или 'DESC'"));
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Направление сортировки должно быть 'ASC' или 'DESC'"));
+    }
+
+    @Test
+    public void testGetAllProducts_minPriceBiggerMaxPrice_returnStatus400() throws Exception {
+        String minPrice = "1";
+        String maxPrice = "0";
+
+        mockMvc.perform(get("/api/product/all")
+                .param("minPrice",minPrice)
+                .param("maxPrice",maxPrice))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Минимальная цена не может быть выше максимальной"));
     }
 }

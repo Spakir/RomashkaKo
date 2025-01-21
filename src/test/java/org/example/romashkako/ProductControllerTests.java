@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.romashkako.controller.ProductController;
 import org.example.romashkako.dto.ProductDTO;
+import org.example.romashkako.dto.ProductFiltersDTO;
+import org.example.romashkako.handler.RestExceptionHandler;
+import org.example.romashkako.model.ErrorResponse;
 import org.example.romashkako.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +16,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,7 +42,9 @@ public class ProductControllerTests {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(productController)
+                .setControllerAdvice(new RestExceptionHandler())
+                .build();
         objectMapper = new ObjectMapper();
     }
 
@@ -63,12 +71,12 @@ public class ProductControllerTests {
         when(productService.createProduct(requestProductDTO)).thenReturn(createdProductDTO);
 
         mockMvc.perform(post("/api/product/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonRequestContent))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequestContent))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(jsonResponseContent));
 
-        verify(productService,times(1)).createProduct(requestProductDTO);
+        verify(productService, times(1)).createProduct(requestProductDTO);
     }
 
     @Test
@@ -85,11 +93,11 @@ public class ProductControllerTests {
 
         when(productService.getProductById(existProductId)).thenReturn(existProductDto);
 
-        mockMvc.perform(get("/api/product/{id}",existProductId))
+        mockMvc.perform(get("/api/product/{id}", existProductId))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
 
-        verify(productService,times(1)).getProductById(1L);
+        verify(productService, times(1)).getProductById(1L);
     }
 
     @Test
@@ -112,24 +120,72 @@ public class ProductControllerTests {
         String jsonRequestContent = objectMapper.writeValueAsString(productDTOForUpdate);
         String jsonResultContent = objectMapper.writeValueAsString(updatedProductDTO);
 
-        when(productService.updateProduct(existProductId,productDTOForUpdate)).thenReturn(updatedProductDTO);
+        when(productService.updateProduct(existProductId, productDTOForUpdate)).thenReturn(updatedProductDTO);
 
-        mockMvc.perform(put("/api/product/{id}",existProductId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonRequestContent))
+        mockMvc.perform(put("/api/product/{id}", existProductId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequestContent))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(jsonResultContent));
 
-        verify(productService,times(1)).updateProduct(existProductId,productDTOForUpdate);
+        verify(productService, times(1)).updateProduct(existProductId, productDTOForUpdate);
     }
 
     @Test
     public void testDeleteProductById_returnStatusOK() throws Exception {
         Long existProductId = 1L;
 
-        mockMvc.perform(delete("/api/product/{id}",existProductId))
+        mockMvc.perform(delete("/api/product/{id}", existProductId))
                 .andExpect(status().isOk());
 
-        verify(productService,times(1)).deleteProductById(existProductId);
+        verify(productService, times(1)).deleteProductById(existProductId);
+    }
+
+    @Test
+    public void testGetAllProducts_validParamsOfFilters_ReturnJSONListProductDTO() throws Exception {
+        ProductFiltersDTO productFiltersDTO = new ProductFiltersDTO(
+                "товар",
+                0,
+                10,
+                true,
+                2,
+                0,
+                "name",
+                "ASC"
+        );
+
+        ProductDTO productDTO = new ProductDTO(
+                1L,
+                "товар первый",
+                "товар №1",
+                0,
+                true
+        );
+        ProductDTO productDTO1 = new ProductDTO(
+                2L,
+                "товар второй",
+                "товар №2",
+                10,
+                true
+        );
+
+        List<ProductDTO> productDTOList = List.of(productDTO, productDTO1);
+        String jsonProductDTOList = objectMapper.writeValueAsString(productDTOList);
+
+        when(productService.getAllProducts(productFiltersDTO)).thenReturn(productDTOList);
+
+        mockMvc.perform(get("/api/product/all")
+                        .param("filterName", productFiltersDTO.getFilterName())
+                        .param("minPrice", String.valueOf(productFiltersDTO.getMinPrice()))
+                        .param("maxPrice", String.valueOf(productFiltersDTO.getMaxPrice()))
+                        .param("inStock", String.valueOf(productFiltersDTO.getInStock()))
+                        .param("limit", String.valueOf(productFiltersDTO.getLimit()))
+                        .param("page", String.valueOf(productFiltersDTO.getPage()))
+                        .param("sortType", productFiltersDTO.getSortType())
+                        .param("sortDirection", productFiltersDTO.getSortDirection()))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(jsonProductDTOList));
+
+        verify(productService,times(1)).getAllProducts(productFiltersDTO);
     }
 }

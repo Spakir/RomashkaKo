@@ -152,6 +152,8 @@ public class ProductControllerTests {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage").value("Товар с данным ID не найден"));
+
+        verify(productService,times(1)).updateProduct(notExistProductId,productDTO);
     }
 
     @Test

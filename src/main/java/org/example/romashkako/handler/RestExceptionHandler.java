@@ -8,33 +8,33 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
 import java.time.LocalDateTime;
 
 @ControllerAdvice
 public class RestExceptionHandler {
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception){
+    private ResponseEntity<ErrorResponse> createResponseEntity(Throwable exception, HttpStatus httpStatus) {
         ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), exception.getMessage());
-        return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorResponse, httpStatus);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
+        return createResponseEntity(exception, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleProductNotFoundException(EntityNotFoundException exception) {
-        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(), exception.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return createResponseEntity(exception, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception){
-        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),exception.getMessage());
-        return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
+        return createResponseEntity(exception, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IllegalAccessError.class)
-    public ResponseEntity<ErrorResponse> handleIllegalAccessError(IllegalAccessError exception){
-        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now(),exception.getMessage());
-        return new ResponseEntity<>(errorResponse,HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorResponse> handleIllegalAccessError(IllegalAccessError error) {
+        return createResponseEntity(error, HttpStatus.CONFLICT);
     }
 }

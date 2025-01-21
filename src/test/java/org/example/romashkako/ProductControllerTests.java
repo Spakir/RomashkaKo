@@ -133,6 +133,28 @@ public class ProductControllerTests {
     }
 
     @Test
+    public void testUpdateProduct_notExistProductId_returnEntityNotFoundException() throws Exception {
+        Long notExistProductId = 0L;
+        ProductDTO productDTO = new ProductDTO(
+                "name",
+                "description",
+                1,
+                true
+        );
+        String jsonRequestBody = objectMapper.writeValueAsString(productDTO);
+
+        doThrow(new EntityNotFoundException("Товар с данным ID не найден"))
+                .when(productService).updateProduct(notExistProductId, productDTO);
+
+        mockMvc.perform(put("/api/product/{id}", notExistProductId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequestBody))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage").value("Товар с данным ID не найден"));
+    }
+
+    @Test
     public void testDeleteProductById_returnStatusOK() throws Exception {
         Long existProductId = 1L;
 
@@ -149,12 +171,12 @@ public class ProductControllerTests {
         doThrow(new EntityNotFoundException("Товар с данным ID не найден"))
                 .when(productService).deleteProductById(notExistProductId);
 
-        mockMvc.perform(delete("/api/product/{id}",notExistProductId))
+        mockMvc.perform(delete("/api/product/{id}", notExistProductId))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage").value("Товар с данным ID не найден"));
 
-        verify(productService,times(1)).deleteProductById(notExistProductId);
+        verify(productService, times(1)).deleteProductById(notExistProductId);
     }
 
     @Test
@@ -245,7 +267,7 @@ public class ProductControllerTests {
         String badParamLimit = "-1";
 
         mockMvc.perform(get("/api/product/all")
-                .param("limit",badParamLimit))
+                        .param("limit", badParamLimit))
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage")
                         .value("Лимит возвращаемых товаров должен быть больше 0"));
@@ -256,7 +278,7 @@ public class ProductControllerTests {
         String badParamPage = "-1";
 
         mockMvc.perform(get("/api/product/all")
-                .param("page",badParamPage))
+                        .param("page", badParamPage))
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage")
                         .value("Страница не может быть отрицательным числом"));
@@ -267,7 +289,7 @@ public class ProductControllerTests {
         String badParamSortType = "bad";
 
         mockMvc.perform(get("/api/product/all")
-                .param("sortType",badParamSortType))
+                        .param("sortType", badParamSortType))
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage")
                         .value("Тип сортировки должен быть 'name' или 'price'"));
@@ -278,7 +300,7 @@ public class ProductControllerTests {
         String badParamSortDirection = "bad";
 
         mockMvc.perform(get("/api/product/all")
-                .param("sortDirection",badParamSortDirection))
+                        .param("sortDirection", badParamSortDirection))
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage").value("Направление сортировки должно быть 'ASC' или 'DESC'"));
     }

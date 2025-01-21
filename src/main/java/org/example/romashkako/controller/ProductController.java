@@ -3,11 +3,9 @@ package org.example.romashkako.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
+import org.example.romashkako.dto.ProductFilterDTO;
 import org.example.romashkako.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -32,45 +30,8 @@ public class ProductController {
 
     @GetMapping("/all")
     @ApiOperation(value = "Получение всех товаров")
-    public List<ProductDTO> getAllProducts(
-            @RequestParam(required = false)
-            @Size(max = 255, message = "Название товара не должно превышать 255 символов")
-            String filterName,
-
-            @RequestParam(required = false)
-            @Min(value = 0, message = "Минимальная цена должна быть >= 0")
-            Integer minPrice,
-
-            @RequestParam(required = false)
-            @Min(value = 0, message = "Максимальная цена должна быть >= 0")
-            Integer maxPrice,
-
-            @RequestParam(required = false)
-            Boolean inStock,
-
-            @RequestParam(defaultValue = "10")
-            @Positive(message = "Лимит возвращаемых товаров должен быть больше 0")
-            int limit,
-
-            @RequestParam(defaultValue = "0")
-            @Min(value = 0, message = "Страница не может быть отрицательным числом")
-            int page,
-
-            @RequestParam(required = false,defaultValue = "name")
-            @Pattern(regexp = "^(name|price)$", message = "Тип сортировки должен быть 'name' или 'price'")
-            String sortType,
-
-            @RequestParam(required = false,defaultValue = "ASC")
-            @Pattern(regexp = "^(ASC|DESC)$", message = "Направление сортировки должно быть 'ASC' или 'DESC'")
-            String sortDirection) {
-        List<ProductDTO> products = productService.getAllProducts(filterName,
-                minPrice,
-                maxPrice,
-                inStock,
-                limit,
-                page,
-                sortType,
-                sortDirection);
+    public List<ProductDTO> getAllProducts(@Valid @ModelAttribute ProductFilterDTO filters) {
+        List<ProductDTO> products = productService.getAllProducts(filters);
 
         return products;
     }

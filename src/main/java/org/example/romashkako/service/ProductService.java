@@ -3,6 +3,7 @@ package org.example.romashkako.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
+import org.example.romashkako.dto.ProductFilterDTO;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
@@ -33,19 +34,16 @@ public class ProductService {
         return savedProductDTO;
     }
 
-    public List<ProductDTO> getAllProducts(String filterName,
-                                           Integer minPrice,
-                                           Integer maxPrice,
-                                           Boolean inStock,
-                                           int limit,
-                                           int page,
-                                           String sortType,
-                                           String sortDirection) {
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortType);
-        Pageable pageable =  PageRequest.of(page, limit, sort);
+    public List<ProductDTO> getAllProducts(ProductFilterDTO filters) {
+        Sort sort = Sort.by(Sort.Direction.fromString(filters.getSortDirection()), filters.getSortType());
+        Pageable pageable =  PageRequest.of(filters.getPage(), filters.getLimit(), sort);
 
         List<ProductDTO> products = null;
-        products = productRepository.findByFilters(filterName, minPrice, maxPrice, inStock, pageable)
+        products = productRepository.findByFilters(filters.getFilterName(),
+                        filters.getMinPrice(),
+                        filters.getMaxPrice(),
+                        filters.getInStock(),
+                        pageable)
                 .stream()
                 .map(productMapper::toProductDTO)
                 .collect(Collectors.toList());

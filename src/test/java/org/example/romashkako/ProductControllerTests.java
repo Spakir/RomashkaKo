@@ -186,6 +186,84 @@ public class ProductControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(jsonProductDTOList));
 
-        verify(productService,times(1)).getAllProducts(productFiltersDTO);
+        verify(productService, times(1)).getAllProducts(productFiltersDTO);
+    }
+
+    @Test
+    public void testGetAllProducts_invalidMinPrice_returnStatus400() throws Exception {
+        String badParamMinPrice = "-1";
+
+        mockMvc.perform(get("/api/product//all")
+                        .param("minPrice", badParamMinPrice))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Минимальная цена должна быть >= 0"));
+    }
+
+    @Test
+    public void testGetAllProducts_invalidMaxPrice_returnStatus400() throws Exception {
+        String badParamMaxPrice = "-1";
+
+        mockMvc.perform(get("/api/product/all")
+                        .param("maxPrice", badParamMaxPrice))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Максимальная цена должна быть >= 0"));
+    }
+
+    @Test
+    public void testGetAllProducts_invalidFilterName_returnStatus400() throws Exception {
+        String badParamFilterName = "a".repeat(256);
+
+        mockMvc.perform(get("/api/product/all")
+                        .param("filterName", badParamFilterName))
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Название товара не должно превышать 255 символов"));
+    }
+
+    @Test
+    public void testGetAllProducts_invalidLimit_returnStatus400() throws Exception {
+        String badParamLimit = "-1";
+
+        mockMvc.perform(get("/api/product/all")
+                .param("limit",badParamLimit))
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Лимит возвращаемых товаров должен быть больше 0"));
+    }
+
+    @Test
+    public void testGetAllProducts_invalidPage_returnStatus400() throws Exception {
+        String badParamPage = "-1";
+
+        mockMvc.perform(get("/api/product/all")
+                .param("page",badParamPage))
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Страница не может быть отрицательным числом"));
+    }
+
+    @Test
+    public void testGetAllProducts_invalidSortType_returnStatus400() throws Exception {
+        String badParamSortType = "bad";
+
+        mockMvc.perform(get("/api/product/all")
+                .param("sortType",badParamSortType))
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Тип сортировки должен быть 'name' или 'price'"));
+    }
+
+    @Test
+    public void testGetAllProducts_invalidSortDirection_returnStatus400() throws Exception {
+        String badParamSortDirection = "bad";
+
+        mockMvc.perform(get("/api/product/all")
+                .param("sortDirection",badParamSortDirection))
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage").value("Направление сортировки должно быть 'ASC' или 'DESC'"));
     }
 }

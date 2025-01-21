@@ -62,9 +62,7 @@ public class ProductService {
     }
 
     public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
-        if (!productRepository.findById(id).isPresent()) {
-            throw new EntityNotFoundException("Товар с данным id не был найден");
-        }
+        validateProductExists(id);
 
         productDTO.setId(id);
         Product product = productMapper.toProduct(productDTO);
@@ -75,9 +73,13 @@ public class ProductService {
     }
 
     public void deleteProductById(Long id) {
-        if (!productRepository.findById(id).isPresent()) {
-            throw new EntityNotFoundException("Товар с данным ID не был найден");
-        }
+        validateProductExists(id);
         productRepository.deleteById(id);
+    }
+
+    public void validateProductExists(Long id){
+        if (!productRepository.findById(id).isPresent()) {
+            throw new EntityNotFoundException("Товар с данным id не был найден");
+        }
     }
 }

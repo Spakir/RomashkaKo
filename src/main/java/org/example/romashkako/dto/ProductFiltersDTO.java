@@ -2,6 +2,8 @@ package org.example.romashkako.dto;
 
 import jakarta.validation.constraints.*;
 
+import java.util.Objects;
+
 public class ProductFiltersDTO {
 
     @Size(max = 255, message = "Название товара не должно превышать 255 символов")
@@ -30,7 +32,14 @@ public class ProductFiltersDTO {
     public ProductFiltersDTO(){
     }
 
-    public ProductFiltersDTO(String filterName, Integer minPrice, Integer maxPrice, Boolean inStock, int limit, int page, String sortType, String sortDirection) {
+    public ProductFiltersDTO(String filterName,
+                             Integer minPrice,
+                             Integer maxPrice,
+                             Boolean inStock,
+                             int limit,
+                             int page,
+                             String sortType,
+                             String sortDirection) {
         this.filterName = filterName;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
@@ -39,6 +48,15 @@ public class ProductFiltersDTO {
         this.page = page;
         this.sortType = sortType;
         this.sortDirection = sortDirection;
+    }
+
+    public ProductFiltersDTO(String filterName, Integer minPrice, Integer maxPrice, Boolean inStock, int limit, int page) {
+        this.filterName = filterName;
+        this.minPrice = minPrice;
+        this.maxPrice = maxPrice;
+        this.inStock = inStock;
+        this.limit = limit;
+        this.page = page;
     }
 
     public String getFilterName() {
@@ -103,6 +121,26 @@ public class ProductFiltersDTO {
 
     public void setSortDirection(String sortDirection) {
         this.sortDirection = sortDirection;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductFiltersDTO that = (ProductFiltersDTO) o;
+        return limit == that.limit &&
+                page == that.page &&
+                Objects.equals(filterName, that.filterName) &&
+                Objects.equals(minPrice, that.minPrice) &&
+                Objects.equals(maxPrice, that.maxPrice) &&
+                Objects.equals(inStock, that.inStock) &&
+                Objects.equals(sortType, that.sortType) &&
+                Objects.equals(sortDirection, that.sortDirection);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(filterName, minPrice, maxPrice, inStock, limit, page, sortType, sortDirection);
     }
 
     @AssertTrue(message = "Минимальная цена не может быть выше максимальной")

@@ -8,9 +8,6 @@ import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import java.util.List;
@@ -37,6 +34,9 @@ public class ProductService {
     public List<ProductDTO> getAllProducts(ProductFiltersDTO filters) {
 
         List<ProductDTO> products = null;
+
+        int offset = filters.getPage() * filters.getLimit();
+
         products = productRepository.findByFilters(filters.getFilterName(),
                         filters.getMinPrice(),
                         filters.getMaxPrice(),
@@ -44,7 +44,7 @@ public class ProductService {
                         filters.getSortType(),
                         filters.getSortDirection(),
                         filters.getLimit(),
-                        filters.getOffset())
+                        offset)
                 .stream()
                 .map(productMapper::toProductDTO)
                 .collect(Collectors.toList());

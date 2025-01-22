@@ -88,6 +88,7 @@ public class ProductServiceTests {
         Boolean inStock = correctProductFiltersDTO.getInStock();
         int limit = correctProductFiltersDTO.getLimit();
         int page = correctProductFiltersDTO.getPage();
+        int offset = page * limit;
         String sortType = correctProductFiltersDTO.getSortType();
         String sortDirection = correctProductFiltersDTO.getSortDirection();
 
@@ -99,7 +100,7 @@ public class ProductServiceTests {
                 sortType,
                 sortDirection,
                 limit,
-                page)).thenReturn(productList);
+                offset)).thenReturn(productList);
 
         List<ProductDTO> result = productService.getAllProducts(correctProductFiltersDTO);
 
@@ -110,7 +111,7 @@ public class ProductServiceTests {
                 sortType,
                 sortDirection,
                 limit,
-                page);
+                offset);
         assertEquals(productDTOList, result);
         assertEquals(1, result.size());
     }

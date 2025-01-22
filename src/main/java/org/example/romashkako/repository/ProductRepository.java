@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                      CASE WHEN :sortType = 'price' AND :sortDirection = 'ASC' THEN p.price END ASC,
                      CASE WHEN :sortType = 'price' AND :sortDirection = 'DESC' THEN p.price END DESC
             
-            LIMIT :limit OFFSET :offset * :limit
+            LIMIT :limit OFFSET :offset
             """,nativeQuery = true)
     List<Product> findByFilters(@Param("filterName") String filterName,
                                 @Param("minPrice") Integer minPrice,

@@ -12,9 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +87,7 @@ public class ProductServiceTests {
         Integer maxPrice = correctProductFiltersDTO.getMaxPrice();
         Boolean inStock = correctProductFiltersDTO.getInStock();
         int limit = correctProductFiltersDTO.getLimit();
-        int offset = correctProductFiltersDTO.getOffset();
+        int page = correctProductFiltersDTO.getPage();
         String sortType = correctProductFiltersDTO.getSortType();
         String sortDirection = correctProductFiltersDTO.getSortDirection();
 
@@ -102,7 +99,7 @@ public class ProductServiceTests {
                 sortType,
                 sortDirection,
                 limit,
-                offset)).thenReturn(productList);
+                page)).thenReturn(productList);
 
         List<ProductDTO> result = productService.getAllProducts(correctProductFiltersDTO);
 
@@ -113,7 +110,7 @@ public class ProductServiceTests {
                 sortType,
                 sortDirection,
                 limit,
-                offset);
+                page);
         assertEquals(productDTOList, result);
         assertEquals(1, result.size());
     }

@@ -90,20 +90,30 @@ public class ProductServiceTests {
         Integer maxPrice = correctProductFiltersDTO.getMaxPrice();
         Boolean inStock = correctProductFiltersDTO.getInStock();
         int limit = correctProductFiltersDTO.getLimit();
-        int page = correctProductFiltersDTO.getPage();
+        int offset = correctProductFiltersDTO.getOffset();
         String sortType = correctProductFiltersDTO.getSortType();
         String sortDirection = correctProductFiltersDTO.getSortDirection();
 
-        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortType);
-        Pageable pageable =  PageRequest.of(page, limit, sort);
-
-
         when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
-        when(productRepository.findByFilters(filterName,minPrice,maxPrice,inStock,pageable)).thenReturn(productList);
+        when(productRepository.findByFilters(filterName,
+                minPrice,
+                maxPrice,
+                inStock,
+                sortType,
+                sortDirection,
+                limit,
+                offset)).thenReturn(productList);
 
         List<ProductDTO> result = productService.getAllProducts(correctProductFiltersDTO);
 
-        verify(productRepository, times(1)).findByFilters(filterName,minPrice,maxPrice,inStock,pageable);
+        verify(productRepository, times(1)).findByFilters(filterName,
+                minPrice,
+                maxPrice,
+                inStock,
+                sortType,
+                sortDirection,
+                limit,
+                offset);
         assertEquals(productDTOList, result);
         assertEquals(1, result.size());
     }

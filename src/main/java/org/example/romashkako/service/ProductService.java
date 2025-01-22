@@ -35,15 +35,16 @@ public class ProductService {
     }
 
     public List<ProductDTO> getAllProducts(ProductFiltersDTO filters) {
-        Sort sort = Sort.by(Sort.Direction.fromString(filters.getSortDirection()), filters.getSortType());
-        Pageable pageable =  PageRequest.of(filters.getPage(), filters.getLimit(), sort);
 
         List<ProductDTO> products = null;
         products = productRepository.findByFilters(filters.getFilterName(),
                         filters.getMinPrice(),
                         filters.getMaxPrice(),
                         filters.getInStock(),
-                        pageable)
+                        filters.getSortType(),
+                        filters.getSortDirection(),
+                        filters.getLimit(),
+                        filters.getOffset())
                 .stream()
                 .map(productMapper::toProductDTO)
                 .collect(Collectors.toList());

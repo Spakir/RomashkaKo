@@ -21,7 +21,7 @@ public class ProductFiltersDTO {
     private int limit = 10;
 
     @Min(value = 0, message = "Страница не может быть отрицательным числом")
-    private int offset;
+    private int page;
 
     @Pattern(regexp = "^(name|price)$", message = "Тип сортировки должен быть 'name' или 'price'")
     private String sortType = "name";
@@ -45,7 +45,7 @@ public class ProductFiltersDTO {
         this.maxPrice = maxPrice;
         this.inStock = inStock;
         this.limit = limit;
-        this.offset = page;
+        this.page = page;
         this.sortType = sortType;
         this.sortDirection = sortDirection;
     }
@@ -61,7 +61,7 @@ public class ProductFiltersDTO {
         this.maxPrice = maxPrice;
         this.inStock = inStock;
         this.limit = limit;
-        this.offset = page;
+        this.page = page;
     }
 
     public String getFilterName() {
@@ -104,12 +104,12 @@ public class ProductFiltersDTO {
         this.limit = limit;
     }
 
-    public int getOffset() {
-        return offset;
+    public int getPage() {
+        return page;
     }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public String getSortType() {
@@ -134,7 +134,7 @@ public class ProductFiltersDTO {
         if (o == null || getClass() != o.getClass()) return false;
         ProductFiltersDTO that = (ProductFiltersDTO) o;
         return limit == that.limit &&
-                offset == that.offset &&
+                page == that.page &&
                 Objects.equals(filterName, that.filterName) &&
                 Objects.equals(minPrice, that.minPrice) &&
                 Objects.equals(maxPrice, that.maxPrice) &&
@@ -145,7 +145,7 @@ public class ProductFiltersDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(filterName, minPrice, maxPrice, inStock, limit, offset, sortType, sortDirection);
+        return Objects.hash(filterName, minPrice, maxPrice, inStock, limit, page, sortType, sortDirection);
     }
 
     @AssertTrue(message = "Минимальная цена не может быть выше максимальной")

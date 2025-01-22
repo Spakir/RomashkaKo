@@ -217,7 +217,7 @@ public class ProductControllerTests {
                         .param("maxPrice", String.valueOf(productFiltersDTO.getMaxPrice()))
                         .param("inStock", String.valueOf(productFiltersDTO.getInStock()))
                         .param("limit", String.valueOf(productFiltersDTO.getLimit()))
-                        .param("offset", String.valueOf(productFiltersDTO.getOffset()))
+                        .param("page", String.valueOf(productFiltersDTO.getPage()))
                         .param("sortType", productFiltersDTO.getSortType())
                         .param("sortDirection", productFiltersDTO.getSortDirection()))
                 .andExpect(status().isOk())
@@ -273,11 +273,11 @@ public class ProductControllerTests {
     }
 
     @Test
-    public void testGetAllProducts_invalidOffset_returnStatus400() throws Exception {
-        String badParamOffset = "-1";
+    public void testGetAllProducts_invalidPage_returnStatus400() throws Exception {
+        String badParamPage = "-1";
 
         mockMvc.perform(get("/api/product/all")
-                        .param("offset", badParamOffset))
+                        .param("page", badParamPage))
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage")
                         .value("Страница не может быть отрицательным числом"));

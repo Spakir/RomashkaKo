@@ -1,13 +1,11 @@
 package org.example.romashkako;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.example.romashkako.controller.ProductController;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.handler.RestExceptionHandler;
-import org.example.romashkako.model.ErrorResponse;
 import org.example.romashkako.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -220,7 +217,7 @@ public class ProductControllerTests {
                         .param("maxPrice", String.valueOf(productFiltersDTO.getMaxPrice()))
                         .param("inStock", String.valueOf(productFiltersDTO.getInStock()))
                         .param("limit", String.valueOf(productFiltersDTO.getLimit()))
-                        .param("page", String.valueOf(productFiltersDTO.getPage()))
+                        .param("offset", String.valueOf(productFiltersDTO.getOffset()))
                         .param("sortType", productFiltersDTO.getSortType())
                         .param("sortDirection", productFiltersDTO.getSortDirection()))
                 .andExpect(status().isOk())
@@ -276,11 +273,11 @@ public class ProductControllerTests {
     }
 
     @Test
-    public void testGetAllProducts_invalidPage_returnStatus400() throws Exception {
-        String badParamPage = "-1";
+    public void testGetAllProducts_invalidOffset_returnStatus400() throws Exception {
+        String badParamOffset = "-1";
 
         mockMvc.perform(get("/api/product/all")
-                        .param("page", badParamPage))
+                        .param("offset", badParamOffset))
                 .andExpect(jsonPath("$.timeStamp").exists())
                 .andExpect(jsonPath("$.errorMessage")
                         .value("Страница не может быть отрицательным числом"));

@@ -6,7 +6,7 @@ import org.example.romashkako.controller.ProductController;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.handler.RestExceptionHandler;
-import org.example.romashkako.service.ProductService;
+import org.example.romashkako.service.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ProductControllerTests {
 
     @Mock
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @InjectMocks
     private ProductController productController;

@@ -2,6 +2,8 @@ package org.example.romashkako.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -21,6 +23,9 @@ public class Product {
     @Column(name = "in_stock")
     private boolean inStock;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductSupply> supplies = new ArrayList<>();
+
     public Product(String name, String description, int price, boolean inStock) {
         this.name = name;
         this.description = description;
@@ -36,7 +41,7 @@ public class Product {
         this.inStock = inStock;
     }
 
-    public Product(){
+    public Product() {
 
     }
 
@@ -80,12 +85,20 @@ public class Product {
         this.id = id;
     }
 
+    public List<ProductSupply> getSupplies() {
+        return supplies;
+    }
+
+    public void setSupplies(List<ProductSupply> supplies) {
+        this.supplies = supplies;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id,product.id);
+        return Objects.equals(id, product.id);
     }
 
     @Override

@@ -7,9 +7,11 @@ import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.service.ProductService;
+import org.example.romashkako.service.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -18,8 +20,12 @@ import java.util.List;
 @Validated
 public class ProductController {
 
+    private final ProductService productService;
+
     @Autowired
-    private ProductService productService;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @PostMapping("/")
     @ApiOperation(value = "Создание нового товара")
@@ -39,7 +45,7 @@ public class ProductController {
     @GetMapping("/{id}")
     @ApiOperation(value = "Получение товара по ID")
     public ProductDTO getProductById(@ApiParam(value = "ID искомого товара")
-                                         @PathVariable(value = "id") Long id) {
+                                     @PathVariable(value = "id") Long id) {
         return productService.getProductById(id);
     }
 

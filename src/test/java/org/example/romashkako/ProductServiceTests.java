@@ -148,17 +148,17 @@ public class ProductServiceTests {
     void testUpdateProduct_existProduct() {
         Long existProductId = correctProduct.getId();
 
-        when(productMapper.toProduct(correctProductDTO)).thenReturn(correctProduct);
         when(productRepository.findById(existProductId)).thenReturn(Optional.of(correctProduct));
         when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
         when(productRepository.save(correctProduct)).thenReturn(correctProduct);
 
-        ProductDTO result = productService.updateProduct(existProductId, correctProductDTO);
+        ProductDTO updatedProductDTO = productService.updateProduct(existProductId,correctProductDTO);
 
         verify(productRepository, times(1)).save(correctProduct);
         verify(productRepository, times(1)).findById(existProductId);
-        verify(productMapper, times(1)).toProduct(correctProductDTO);
-        assertEquals(correctProductDTO,result);
+        verify(productMapper,times(1)).toProductDTO(correctProduct);
+        verify(productMapper, times(1)).updateProductFromDTO(correctProductDTO,correctProduct);
+        assertEquals(correctProductDTO,updatedProductDTO);
     }
 
     @Test

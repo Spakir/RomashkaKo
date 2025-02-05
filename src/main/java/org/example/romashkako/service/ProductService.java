@@ -1,84 +1,21 @@
 package org.example.romashkako.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductFiltersDTO;
-import org.example.romashkako.mapper.ProductMapper;
-import org.example.romashkako.model.Product;
-import org.example.romashkako.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Service
-@Validated
-public class ProductService {
+public interface ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    ProductDTO createProduct(@Valid ProductDTO productDTO);
 
-    @Autowired
-    private ProductMapper productMapper;
+    List<ProductDTO> getAllProducts(@Valid ProductFiltersDTO filters);
 
-    public ProductDTO createProduct(@Valid ProductDTO productDTO) {
-        Product product = productMapper.toProduct(productDTO);
-        Product savedProduct = productRepository.save(product);
-        ProductDTO savedProductDTO = productMapper.toProductDTO(savedProduct);
+    ProductDTO getProductById(Long id);
 
-        return savedProductDTO;
-    }
+    ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO);
 
-    public List<ProductDTO> getAllProducts(ProductFiltersDTO filters) {
+    void deleteProductById(Long id);
 
-        List<ProductDTO> products = null;
-
-        int offset = filters.getPage() * filters.getLimit();
-
-        products = productRepository.findByFilters(filters.getFilterName(),
-                        filters.getMinPrice(),
-                        filters.getMaxPrice(),
-                        filters.getInStock(),
-                        filters.getSortType(),
-                        filters.getSortDirection(),
-                        filters.getLimit(),
-                        offset)
-                .stream()
-                .map(productMapper::toProductDTO)
-                .collect(Collectors.toList());
-
-        return products;
-    }
-
-    public ProductDTO getProductById(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Товар с данным ID не был найден"));
-        ProductDTO productDTO = productMapper.toProductDTO(product);
-
-        return productDTO;
-    }
-
-    public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
-        validateProductExists(id);
-
-        productDTO.setId(id);
-        Product product = productMapper.toProduct(productDTO);
-        Product updatedProduct = productRepository.save(product);
-        ProductDTO updatedProductDTO = productMapper.toProductDTO(updatedProduct);
-
-        return updatedProductDTO;
-    }
-
-    public void deleteProductById(Long id) {
-        validateProductExists(id);
-        productRepository.deleteById(id);
-    }
-
-    private void validateProductExists(Long id){
-        if (!productRepository.findById(id).isPresent()) {
-            throw new EntityNotFoundException("Товар с данным ID не был найден");
-        }
-    }
 }

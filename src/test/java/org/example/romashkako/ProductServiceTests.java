@@ -6,7 +6,7 @@ import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
-import org.example.romashkako.service.ProductService;
+import org.example.romashkako.service.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,7 +28,7 @@ public class ProductServiceTests {
     private ProductMapper productMapper;
 
     @InjectMocks
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
 
     ProductDTO correctProductDTO = new ProductDTO(

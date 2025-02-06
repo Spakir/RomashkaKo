@@ -36,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getAllProducts(ProductFiltersDTO filters) {
+    public List<ProductDTO> getAllProducts(@Valid ProductFiltersDTO filters) {
         List<ProductDTO> products = null;
 
         int offset = filters.getPage() * filters.getLimit();

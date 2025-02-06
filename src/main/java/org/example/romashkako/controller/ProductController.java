@@ -36,10 +36,10 @@ public class ProductController {
 
     @GetMapping("/all")
     @ApiOperation(value = "Получение всех товаров")
-    public List<ProductDTO> getAllProducts(@Valid @ModelAttribute ProductFiltersDTO filters) {
-        List<ProductDTO> products = productService.getAllProducts(filters);
-
-        return products;
+    public List<ProductDTO> getAllProducts(
+            @ApiParam(value = "Фильтры для поиска товаров")
+            @ModelAttribute ProductFiltersDTO filters) {
+        return productService.getAllProducts(filters);
     }
 
     @GetMapping("/{id}")

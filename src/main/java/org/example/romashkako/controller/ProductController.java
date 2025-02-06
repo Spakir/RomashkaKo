@@ -3,11 +3,9 @@ package org.example.romashkako.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.service.ProductService;
-import org.example.romashkako.service.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +50,9 @@ public class ProductController {
     @PutMapping("/{id}")
     @ApiOperation(value = "Обновление товара с указанным ID")
     public ProductDTO updateProduct(@ApiParam(value = "ID товара,который надо обновить")
-                                    @PathVariable(name = "id") Long id, @RequestBody ProductDTO productDTO) {
+                                    @PathVariable(name = "id") Long id,
+                                    @ApiParam(value = "DTO товара,который надо обновить")
+                                    @RequestBody ProductDTO productDTO) {
         return productService.updateProduct(id, productDTO);
     }
 

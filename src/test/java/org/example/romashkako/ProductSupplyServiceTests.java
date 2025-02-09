@@ -134,4 +134,55 @@ public class ProductSupplyServiceTests {
         verify(productSupplyRepository,times(1)).findAll();
         verify(productSupplyMapper,times(1)).toProductSupplyDTO(productSupply);
     }
+
+    @Test
+    public void test_updateProductSupply_returnProductSupplyDTO(){
+        Long id = 1L;
+        String documentName = "document";
+        int quantity = 400;
+
+        String productName = "product";
+        boolean inStock = true;
+        int price = 100;
+        String description = "description";
+
+        Product product = new Product(id,productName,description,price,inStock);
+        ProductSupply existProductSupply = new ProductSupply(id,"null",product,1);
+        ProductSupplyDTO productSupplyDTO = new ProductSupplyDTO(null,documentName,id,quantity);
+        ProductSupply updatedProductSupply = new ProductSupply(id,documentName,product,quantity);
+        ProductSupplyDTO updatedProductSupplyDTO = new ProductSupplyDTO(id,documentName,id,quantity);
+
+        when(productSupplyRepository.findById(id)).thenReturn(Optional.of(existProductSupply));
+        when(productSupplyRepository.save(updatedProductSupply)).thenReturn(updatedProductSupply);
+        when(productSupplyMapper.toProductSupplyDTO(updatedProductSupply)).thenReturn(updatedProductSupplyDTO);
+
+        ProductSupplyDTO result = productSupplyService.updateProductSupply(id,productSupplyDTO);
+
+        assertEquals(updatedProductSupplyDTO,result);
+        verify(productSupplyRepository,times(1)).findById(id);
+        verify(productSupplyMapper,times(1))
+                .updateProductSuppleFromDTO(productSupplyDTO,existProductSupply);
+        verify(productSupplyMapper,times(1)).toProductSupplyDTO(updatedProductSupply);
+    }
+
+    @Test
+    public void test_deleteProductSupplyById(){
+        Long id = 1L;
+        String documentName = "document";
+        int quantity = 400;
+
+        String productName = "product";
+        boolean inStock = true;
+        int price = 100;
+        String description = "description";
+
+        Product product = new Product(id,productName,description,price,inStock);
+        ProductSupply existProductSupply = new ProductSupply(id,documentName,product,quantity);
+
+        when(productSupplyRepository.findById(id)).thenReturn(Optional.of(existProductSupply));
+
+        productSupplyService.deleteProductSupplyById(id);
+
+        verify(productSupplyRepository,times(1)).findById(id);
+    }
 }

@@ -2,14 +2,17 @@ package org.example.romashkako.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductSupplyDTO;
 import org.example.romashkako.service.ProductSupplyService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/supply/")
+@Validated
 public class ProductSupplyController {
 
     private final ProductSupplyService productSupplyService;
@@ -21,7 +24,7 @@ public class ProductSupplyController {
     @PostMapping("/")
     @ApiOperation("Создание новой поставки товара")
     public ProductSupplyDTO createProductSupply(@ApiParam(value = "Данные добавляемой поставки товара")
-                                                @RequestBody ProductSupplyDTO productSupplyDTO) {
+                                                @RequestBody @Valid ProductSupplyDTO productSupplyDTO) {
         return productSupplyService.createProductSupply(productSupplyDTO);
     }
 
@@ -43,7 +46,7 @@ public class ProductSupplyController {
     public ProductSupplyDTO updateProductSupply(@ApiParam(value = "ID поставки товара,которую надо обновить")
                                                 @PathVariable(name = "id") Long id,
                                                 @ApiParam(value = "DTO поставки товара,которую надо обновить")
-                                                @RequestBody ProductSupplyDTO productSupplyDTO) {
+                                                @RequestBody @Valid ProductSupplyDTO productSupplyDTO) {
         return productSupplyService.updateProductSupply(id, productSupplyDTO);
     }
 

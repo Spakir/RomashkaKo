@@ -1,15 +1,21 @@
 package org.example.romashkako.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+
 import java.util.Objects;
 
 public class ProductSupplyDTO {
 
     private Long id;
 
+    @Size(max = 255,message = "Название поставки товара должно содержать меньше 255 символов")
     private String documentName;
 
+    @Min(value = 1,message = "Продукт должен быть существующим")
     private Long productId;
 
+    @Min(value = 1,message = "Кол-во поставляемого товара должно быть больше 0")
     private Integer quantity;
 
     public ProductSupplyDTO(){

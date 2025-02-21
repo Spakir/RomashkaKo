@@ -1,11 +1,10 @@
 package org.example.romashkako;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.example.romashkako.controller.ProductSupplyController;
-import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductSupplyDTO;
-import org.example.romashkako.service.ProductSupplyService;
+import org.example.romashkako.handler.RestExceptionHandler;
 import org.example.romashkako.service.ProductSupplyServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +16,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +40,9 @@ public class ProductSupplyControllerTests {
     @BeforeEach
     public void setUp() {
         objectMapper = new ObjectMapper();
-        mockMvc = MockMvcBuilders.standaloneSetup(productSupplyController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(productSupplyController)
+                .setControllerAdvice(new RestExceptionHandler())
+                .build();
     }
 
     @Test
@@ -76,6 +79,7 @@ public class ProductSupplyControllerTests {
         when(productSupplyService.getProductSupplyById(id)).thenReturn(productSupplyDTO);
 
         mockMvc.perform(get("/api/supply/{id}", id))
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
 
         verify(productSupplyService, times(1)).getProductSupplyById(id);
@@ -94,9 +98,10 @@ public class ProductSupplyControllerTests {
         when(productSupplyService.getAllProductSupplies()).thenReturn(list);
 
         mockMvc.perform(get("/api/supply/all"))
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
 
-        verify(productSupplyService,times(1)).getAllProductSupplies();
+        verify(productSupplyService, times(1)).getAllProductSupplies();
     }
 
     @Test
@@ -105,24 +110,47 @@ public class ProductSupplyControllerTests {
         String documentName = "document";
         int quantity = 100;
 
-        ProductSupplyDTO updateProductSupplyDTO = new ProductSupplyDTO(null,documentName,id,quantity);
-        ProductSupplyDTO updatedProductSupplyDTOWithId = new ProductSupplyDTO(id,documentName,id,quantity);
+        ProductSupplyDTO updateProductSupplyDTO = new ProductSupplyDTO(null, documentName, id, quantity);
+        ProductSupplyDTO updatedProductSupplyDTOWithId = new ProductSupplyDTO(id, documentName, id, quantity);
         String jsonRequest = objectMapper.writeValueAsString(updateProductSupplyDTO);
         String jsonResponse = objectMapper.writeValueAsString(updatedProductSupplyDTOWithId);
 
-        when(productSupplyService.updateProductSupply(id,updateProductSupplyDTO))
+        when(productSupplyService.updateProductSupply(id, updateProductSupplyDTO))
                 .thenReturn(updatedProductSupplyDTOWithId);
 
-        mockMvc.perform(put("/api/supply/{id}",id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonRequest))
+        mockMvc.perform(put("/api/supply/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(jsonResponse));
 
-        verify(productSupplyService,times(1)).updateProductSupply(id,updateProductSupplyDTO);
+        verify(productSupplyService, times(1)).updateProductSupply(id, updateProductSupplyDTO);
     }
 
     @Test
-    public void test_deleteProductSupply(){
+    public void test_deleteProductSupplyById_existProductSupply() throws Exception {
+        Long id = 1L;
 
+        mockMvc.perform(delete("/api/supply/{id}", id))
+                .andExpect(status().isOk());
+
+        verify(productSupplyService, times(1)).deleteProductSupplyById(id);
+    }
+
+    @Test
+    public void test_deleteProductSupplyById_notExistProductSupply() throws Exception {
+        Long id = 0L;
+        String exceptionMessage = "Поставка товара с данным ID не была найдена";
+
+        doThrow(new EntityNotFoundException(exceptionMessage))
+                .when(productSupplyService).deleteProductSupplyById(id);
+
+        mockMvc.perform(delete("/api/supply/{id}", id))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.timeStamp").exists())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value(exceptionMessage));
+
+        verify(productSupplyService, times(1)).deleteProductSupplyById(id);
     }
 }

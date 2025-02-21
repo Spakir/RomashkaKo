@@ -31,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "products", allEntries = true)
     public ProductDTO createProduct(@Valid ProductDTO productDTO) {
         Product product = mapToProduct(productDTO);
         Product savedProduct = productRepository.save(product);
@@ -67,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "products", allEntries = true)
     public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
         Product existProduct = getExistProductOrThrow(id);
         productMapper.updateProductFromDTO(productDTO, existProduct);
@@ -75,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @CacheEvict(value = "products", allEntries = true)
+    @CacheEvict(value = {"product","products"}, allEntries = true)
     public void deleteProductById(Long id) {
         getExistProductOrThrow(id);
         productRepository.deleteById(id);

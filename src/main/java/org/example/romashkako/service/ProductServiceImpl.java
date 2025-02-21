@@ -8,6 +8,8 @@ import org.example.romashkako.mapper.ProductMapper;
 import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -36,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", key = "#filters.toString()")
     public List<ProductDTO> getAllProducts(@Valid ProductFiltersDTO filters) {
         List<ProductDTO> products = null;
 
@@ -57,6 +60,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "product", key = "#id")
     public ProductDTO getProductById(Long id) {
         Product product = getExistProductOrThrow(id);
         return mapToProductDTO(product);
@@ -65,12 +69,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
         Product existProduct = getExistProductOrThrow(id);
-        productMapper.updateProductFromDTO(productDTO,existProduct);
+        productMapper.updateProductFromDTO(productDTO, existProduct);
         Product updatedProduct = productRepository.save(existProduct);
         return mapToProductDTO(updatedProduct);
     }
 
     @Override
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProductById(Long id) {
         getExistProductOrThrow(id);
         productRepository.deleteById(id);
@@ -81,11 +86,11 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Товар с данным ID не был найден"));
     }
 
-    private Product mapToProduct(ProductDTO productDTO){
+    private Product mapToProduct(ProductDTO productDTO) {
         return productMapper.toProduct(productDTO);
     }
 
-    private ProductDTO mapToProductDTO(Product product){
+    private ProductDTO mapToProductDTO(Product product) {
         return productMapper.toProductDTO(product);
     }
 }

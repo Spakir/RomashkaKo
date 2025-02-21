@@ -1,10 +1,7 @@
 package org.example.romashkako.service;
 
 import org.example.romashkako.dto.ProductSupplyDTO;
-
-
 import java.util.List;
-
 public interface ProductSupplyService {
 
     ProductSupplyDTO createProductSupply(ProductSupplyDTO productSupplyDTO);

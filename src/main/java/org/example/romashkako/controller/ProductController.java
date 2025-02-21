@@ -3,6 +3,7 @@ package org.example.romashkako.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import jakarta.validation.Valid;
 import org.example.romashkako.dto.ProductDTO;
 import org.example.romashkako.dto.ProductFiltersDTO;
 import org.example.romashkako.service.ProductService;
@@ -36,7 +37,7 @@ public class ProductController {
     @ApiOperation(value = "Получение всех товаров")
     public List<ProductDTO> getAllProducts(
             @ApiParam(value = "Фильтры для поиска товаров")
-            @ModelAttribute ProductFiltersDTO filters) {
+            @ModelAttribute @Valid ProductFiltersDTO filters) {
         return productService.getAllProducts(filters);
     }
 

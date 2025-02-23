@@ -10,6 +10,7 @@ import org.example.romashkako.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -77,7 +78,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @CacheEvict(value = {"product","products"}, allEntries = true)
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "product", key = "#id"),
+                    @CacheEvict(value = "products",allEntries = true)
+            }
+    )
     public void deleteProductById(Long id) {
         getExistProductOrThrow(id);
         productRepository.deleteById(id);

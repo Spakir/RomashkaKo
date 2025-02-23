@@ -9,6 +9,7 @@ import org.example.romashkako.model.Product;
 import org.example.romashkako.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -69,7 +70,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @CacheEvict(value = "products", allEntries = true)
+    @Caching(
+            evict = @CacheEvict(value = "products", allEntries = true),
+            put = @CachePut(value = "product",key = "#id")
+    )
     public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
         Product existProduct = getExistProductOrThrow(id);
         productMapper.updateProductFromDTO(productDTO, existProduct);

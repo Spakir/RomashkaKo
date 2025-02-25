@@ -7,6 +7,10 @@ import org.example.romashkako.mapper.ProductSupplyMapper;
 import org.example.romashkako.model.ProductSupply;
 import org.example.romashkako.repository.ProductSupplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +39,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @CacheEvict(value = "productsSupplies", allEntries = true)
     public ProductSupplyDTO createProductSupply(ProductSupplyDTO productSupplyDTO) {
         ProductSupply productSupply = mapToProductSupply(productSupplyDTO);
         ProductSupply createdProductSupply = productSupplyRepository.save(productSupply);
@@ -42,12 +47,14 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Cacheable(value = "productSupply", key = "#id")
     public ProductSupplyDTO getProductSupplyById(Long id) {
         ProductSupply productSupply = getExistProductSupplyOrThrow(id);
         return mapToProductSupplyDTO(productSupply);
     }
 
     @Override
+    @Cacheable(value = "productsSupplies",key = "'allProductSupplies'")
     public List<ProductSupplyDTO> getAllProductSupplies() {
         return productSupplyRepository.findAll()
                 .stream()
@@ -56,6 +63,10 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Caching(
+            evict = @CacheEvict(value = "productsSupplies", allEntries = true),
+            put = @CachePut(value = "productSupply", key = "#id")
+    )
     public ProductSupplyDTO updateProductSupply(Long id, ProductSupplyDTO productSupplyDTO) {
         ProductSupply existProductSupply = getExistProductSupplyOrThrow(id);
         productSupplyMapper.updateProductSuppleFromDTO(productSupplyDTO, existProductSupply);
@@ -64,6 +75,12 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "productSupply", key = "#id"),
+                    @CacheEvict(value = "productsSupplies", allEntries = true)
+            }
+    )
     public void deleteProductSupplyById(Long id) {
         getExistProductSupplyOrThrow(id);
         productSupplyRepository.deleteById(id);

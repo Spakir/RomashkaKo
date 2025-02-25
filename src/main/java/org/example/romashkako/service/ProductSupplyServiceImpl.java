@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "productsSupplies", allEntries = true)
     public ProductSupplyDTO createProductSupply(ProductSupplyDTO productSupplyDTO) {
         ProductSupply productSupply = mapToProductSupply(productSupplyDTO);
@@ -47,6 +49,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable(value = "productSupply", key = "#id")
     public ProductSupplyDTO getProductSupplyById(Long id) {
         ProductSupply productSupply = getExistProductSupplyOrThrow(id);
@@ -54,6 +57,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable(value = "productsSupplies",key = "'allProductSupplies'")
     public List<ProductSupplyDTO> getAllProductSupplies() {
         return productSupplyRepository.findAll()
@@ -63,6 +67,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Transactional
     @Caching(
             evict = @CacheEvict(value = "productsSupplies", allEntries = true),
             put = @CachePut(value = "productSupply", key = "#id")
@@ -75,6 +80,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     }
 
     @Override
+    @Transactional
     @Caching(
             evict = {
                     @CacheEvict(value = "productSupply", key = "#id"),

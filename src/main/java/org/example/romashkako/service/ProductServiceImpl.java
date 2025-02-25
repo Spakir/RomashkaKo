@@ -76,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Caching(
             evict = @CacheEvict(value = "products", allEntries = true),
-            put = @CachePut(value = "product: #id", key = "#id")
+            put = @CachePut(value = "product", key = "#id")
     )
     public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
         Product existProduct = getExistProductOrThrow(id);

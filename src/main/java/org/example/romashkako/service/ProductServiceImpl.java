@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "products", allEntries = true)
     public ProductDTO createProduct(@Valid ProductDTO productDTO) {
         Product product = mapToProduct(productDTO);
@@ -41,10 +43,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable(value = "products", key = "#filters.toString()")
     public List<ProductDTO> getAllProducts(@Valid ProductFiltersDTO filters) {
         List<ProductDTO> products = null;
-
         int offset = filters.getPage() * filters.getLimit();
 
         products = productRepository.findByFilters(filters.getFilterName(),
@@ -63,6 +65,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable(value = "product", key = "#id")
     public ProductDTO getProductById(Long id) {
         Product product = getExistProductOrThrow(id);
@@ -70,22 +73,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     @Caching(
             evict = @CacheEvict(value = "products", allEntries = true),
-            put = @CachePut(value = "product",key = "#id")
+            put = @CachePut(value = "product: #id", key = "#id")
     )
     public ProductDTO updateProduct(Long id, @Valid ProductDTO productDTO) {
         Product existProduct = getExistProductOrThrow(id);
         productMapper.updateProductFromDTO(productDTO, existProduct);
         Product updatedProduct = productRepository.save(existProduct);
         return mapToProductDTO(updatedProduct);
+
     }
 
     @Override
+    @Transactional
     @Caching(
             evict = {
                     @CacheEvict(value = "product", key = "#id"),
-                    @CacheEvict(value = "products",allEntries = true)
+                    @CacheEvict(value = "products", allEntries = true)
             }
     )
     public void deleteProductById(Long id) {

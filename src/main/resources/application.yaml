@@ -9,7 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: admin
     password: admin123
-    url: jdbc:postgresql://postgres:5432/romashka-ko_db
+    url: jdbc:postgresql://localhost:5432/romashka-ko_db
 
   jpa:
     hibernate:

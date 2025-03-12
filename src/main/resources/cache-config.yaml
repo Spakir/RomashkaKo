@@ -1,0 +1,15 @@
+spring:
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+cache:
+  ttl:
+    product: 60
+    products: 60
+    product-supply: 60
+    products-supplies: 60

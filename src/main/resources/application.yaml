@@ -1,15 +1,12 @@
 spring:
   application:
-  name: RomashkaKo
-
-  cache:
-    type: redis
+    name: RomashkaKo
 
   datasource:
     driver-class-name: org.postgresql.Driver
     username: admin
     password: admin123
-    url: jdbc:postgresql://postgres:5432/romashka-ko_db
+    url: jdbc:postgresql://localhost:5432/romashka-ko_db
 
   jpa:
     hibernate:
@@ -20,10 +17,8 @@ spring:
     enabled: true
     change-log: /db/changelog/master-db.yaml
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
+  config:
+    import: classpath:cache-config.yaml
 
 logging:
   level:

@@ -41,7 +41,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "productsSupplies", allEntries = true)
+    @CacheEvict(value = "products-supplies", allEntries = true)
     public ProductSupplyDTO createProductSupply(ProductSupplyDTO productSupplyDTO) {
         ProductSupply productSupply = mapToProductSupply(productSupplyDTO);
         ProductSupply createdProductSupply = productSupplyRepository.save(productSupply);
@@ -50,7 +50,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "productSupply", key = "#id")
+    @Cacheable(value = "product-supply", key = "#id")
     public ProductSupplyDTO getProductSupplyById(Long id) {
         ProductSupply productSupply = getExistProductSupplyOrThrow(id);
         return mapToProductSupplyDTO(productSupply);
@@ -58,7 +58,7 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "productsSupplies",key = "'allProductSupplies'")
+    @Cacheable(value = "products-supplies",key = "'allProductSupplies'")
     public List<ProductSupplyDTO> getAllProductSupplies() {
         return productSupplyRepository.findAll()
                 .stream()
@@ -69,8 +69,8 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     @Override
     @Transactional
     @Caching(
-            evict = @CacheEvict(value = "productsSupplies", allEntries = true),
-            put = @CachePut(value = "productSupply", key = "#id")
+            evict = @CacheEvict(value = "products-supplies", allEntries = true),
+            put = @CachePut(value = "product-supply", key = "#id")
     )
     public ProductSupplyDTO updateProductSupply(Long id, ProductSupplyDTO productSupplyDTO) {
         ProductSupply existProductSupply = getExistProductSupplyOrThrow(id);
@@ -83,8 +83,8 @@ public class ProductSupplyServiceImpl implements ProductSupplyService {
     @Transactional
     @Caching(
             evict = {
-                    @CacheEvict(value = "productSupply", key = "#id"),
-                    @CacheEvict(value = "productsSupplies", allEntries = true)
+                    @CacheEvict(value = "product-supply", key = "#id"),
+                    @CacheEvict(value = "products-supplies", allEntries = true)
             }
     )
     public void deleteProductSupplyById(Long id) {

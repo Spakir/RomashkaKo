@@ -121,7 +121,7 @@ public class ProductServiceTests {
         Long existProductId = correctProductDTO.getId();
 
         when(productMapper.toProductDTO(correctProduct)).thenReturn(correctProductDTO);
-        when(productRepository.findById(existProductId)).thenReturn(Optional.of(correctProduct));
+            when(productRepository.findById(existProductId)).thenReturn(Optional.of(correctProduct));
 
         ProductDTO result = productService.getProductById(existProductId);
 
